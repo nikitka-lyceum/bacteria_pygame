@@ -1,6 +1,7 @@
 import pygame
 from config import *
 from classes.bacterium import *
+from classes.player import *
 from classes.eat import *
 
 all_sprites = pygame.sprite.Group()
@@ -8,6 +9,11 @@ all_sprites = pygame.sprite.Group()
 Bacterium(all_sprites)
 Bacterium(all_sprites)
 Bacterium(all_sprites)
+
+Eat(all_sprites)
+Eat(all_sprites)
+Eat(all_sprites)
+Eat(all_sprites)
 
 def main():
     pygame.init()
@@ -37,7 +43,9 @@ def main():
         keys = pygame.key.get_pressed()
 
         for sprite in all_sprites:
-            sprite.check_enemy(all_sprites)
+            print(str(sprite))
+            if str(sprite) == "Bacterium":
+                sprite.check_enemy(all_sprites)
 
         player.check_enemy(all_sprites)
         player.update(event=keys, enemys=all_sprites)

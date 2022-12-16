@@ -20,6 +20,10 @@ class Eat(pygame.sprite.Sprite):
         self.rect.y = random.randint(0, HEIGHT)
 
         self.force = random.randint(1, 5)
+        self.speed = random.randint(1, 5)
+
+    def __str__(self):
+        return "Eat"
 
 
     def update(self):
