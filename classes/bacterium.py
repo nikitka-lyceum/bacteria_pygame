@@ -10,53 +10,93 @@ pygame.init()
 
 class Bacterium(pygame.sprite.Sprite):
     image = pygame.image.load(PATH_IMAGE + "bacterium.png")
+    image = pygame.transform.scale(image, (100, 100))
+
 
     def __init__(self, *groups):
         super().__init__(*groups)
 
         self.image = Bacterium.image
         self.rect = self.image.get_rect()
+        self.rect.x = random.randint(0, WIDTH)
+        self.mask = pygame.mask.from_surface(self.image)
 
-        self.speed = 2
-        self.force = 2
+        self.force = 1
+        self.speed = 5
 
     def update(self):
         self.rect = self.rect.move(random.randrange(3) - 1,
                                    random.randrange(3) - 1)
 
 
+    def check_enemy(self, enemys):
+        for enemy in enemys:
+            if pygame.sprite.collide_mask(self, enemy) and enemy != self:
+                if self.force > enemy.force:
+                    self.force += enemy.force
+                    self.speed += enemy.speed
+
+                    enemy.kill()
+
+
+
 class Player(pygame.sprite.Sprite):
     image = pygame.image.load(PATH_IMAGE + "bacterium.png")
+    image = pygame.transform.scale(image, (100, 100))
 
     def __init__(self, *groups):
         super().__init__(*groups)
 
-        self.image = Bacterium.image
+        self.image = Player.image
         self.rect = self.image.get_rect()
-
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect.x = WIDTH // 2 - self.rect.width // 2
         self.rect.y = HEIGHT // 2 - self.rect.height // 2
 
-        self.speed = 2
-        self.force = 2
 
-    def update(self, event=None, groups=None):
-        for bacterium in groups:
-            if event is not None:
-                if event[K_a] or event[K_LEFT]:
-                    bacterium.rect = bacterium.rect.move(self.speed, 0)
+        self.force = 1
+        self.speed = 5
 
-                if event[K_d] or event[K_RIGHT]:
-                    bacterium.rect = bacterium.rect.move(-self.speed, 0)
 
-                if event[K_w] or event[K_UP]:
-                    bacterium.rect = bacterium.rect.move(0, self.speed)
+    def update(self, event=None, enemys=None):
+        for enemy in enemys:
+            if event[K_a] or event[K_LEFT]:
+                enemy.rect = enemy.rect.move(self.speed, 0)
 
-                if event[K_s] or event[K_DOWN]:
-                    bacterium.rect = bacterium.rect.move(0, -self.speed)
+            if event[K_d] or event[K_RIGHT]:
+                enemy.rect = enemy.rect.move(-self.speed, 0)
+
+            if event[K_w] or event[K_UP]:
+                enemy.rect = enemy.rect.move(0, self.speed)
+
+            if event[K_s] or event[K_DOWN]:
+                enemy.rect = enemy.rect.move(0, -self.speed)
+
+
+
+    def check_enemy(self, enemys):
+        for enemy in enemys:
+            if pygame.sprite.collide_mask(self, enemy):
+                if self.force > enemy.force:
+                    self.force += enemy.force
+                    self.speed += enemy.speed
+
+                    enemy.kill()
+
+                else:
+                    enemy.force += self.force
+                    enemy.speed += self.speed
+
+                    self.kill()
 
     def draw(self, screen):
         screen.blit(Player.image, (self.rect.x, self.rect.y))
 
+        font = pygame.font.Font(None, 50)
+        text = font.render("Nikita", True, (100, 255, 100))
+        text_x = WIDTH // 2 - text.get_width() // 2
+        text_y = HEIGHT // 2 - self.rect.height // 2 - 25
+
+        screen.blit(text, (text_x, text_y))
 
 

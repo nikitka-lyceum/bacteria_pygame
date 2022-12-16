@@ -1,19 +1,13 @@
 import pygame
 from config import *
 from classes.bacterium import *
+from classes.eat import *
 
+all_sprites = pygame.sprite.Group()
 
-all_bacterium = pygame.sprite.Group()
-
-Bacterium(all_bacterium)
-Bacterium(all_bacterium)
-Bacterium(all_bacterium)
-Bacterium(all_bacterium)
-Bacterium(all_bacterium)
-Bacterium(all_bacterium)
-Bacterium(all_bacterium)
-Bacterium(all_bacterium)
-
+Bacterium(all_sprites)
+Bacterium(all_sprites)
+Bacterium(all_sprites)
 
 def main():
     pygame.init()
@@ -21,6 +15,15 @@ def main():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
     player = Player()
+
+
+    def draw(screen):
+        screen.fill((0, 0, 0))
+        all_sprites.draw(screen)
+        all_sprites.update()
+
+        player.draw(screen)
+        pygame.display.update()
 
     clock = pygame.time.Clock()
 
@@ -33,13 +36,13 @@ def main():
 
         keys = pygame.key.get_pressed()
 
-        screen.fill((0, 0, 0))
-        all_bacterium.update()
-        all_bacterium.draw(screen)
+        for sprite in all_sprites:
+            sprite.check_enemy(all_sprites)
 
-        player.update(event=keys, groups=all_bacterium)
-        player.draw(screen)
-        pygame.display.update()
+        player.check_enemy(all_sprites)
+        player.update(event=keys, enemys=all_sprites)
+
+        draw(screen)
 
 
 if __name__ == '__main__':
