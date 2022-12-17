@@ -33,33 +33,5 @@ class Player(pygame.sprite.Sprite):
             if event[K_s] or event[K_DOWN]:
                 enemy.rect = enemy.rect.move(0, -self.speed)
 
-    def check_enemy(self, enemys):
-        for enemy in enemys:
-            if pygame.sprite.collide_mask(self, enemy):
-                if str(enemy) == "Eat":
-                    self.force += enemy.force
-                    self.speed += enemy.speed
-
-                    enemy.kill()
-
-                elif self.force > enemy.force:
-                    self.force += enemy.force
-                    self.speed += enemy.speed
-
-                    enemy.kill()
-
-                else:
-                    enemy.force += self.force
-                    enemy.speed += self.speed
-
-                    self.kill()
-
     def draw(self, screen):
         screen.blit(Player.image, (self.rect.x, self.rect.y))
-
-        font = pygame.font.Font(None, 50)
-        text = font.render("Nikita", True, (100, 255, 100))
-        text_x = WIDTH // 2 - text.get_width() // 2
-        text_y = HEIGHT // 2 - self.rect.height // 2 - 25
-
-        screen.blit(text, (text_x, text_y))
