@@ -1,32 +1,35 @@
 import pygame
 from config import *
-from classes.bacterium import *
+
 from classes.player import *
-from classes.eat import *
+from classes.map import *
+
+map = Map(Player(), Player(), Player(), Player(), Player(), Player(), Player(), Player(), Player())
+player = Player()
+
+
+def draw(screen):
+    screen.fill((0, 0, 0))
+    player.draw(screen)
+    pygame.display.update()
+
 
 def main():
     pygame.init()
-    pygame.display.set_caption("Lost in the room")
+    pygame.display.set_caption("Bacterium")
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
-
-    player = Player()
-
-    def draw(screen):
-        screen.fill((0, 0, 0))
-
-        player.draw(screen)
-        pygame.display.update()
 
     clock = pygame.time.Clock()
 
     running = True
     while running:
         clock.tick(FPS)
+        keys = pygame.key.get_pressed()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
-        keys = pygame.key.get_pressed()
+
         draw(screen)
 
 

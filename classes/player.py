@@ -19,19 +19,8 @@ class Player(pygame.sprite.Sprite):
         self.force = 1
         self.speed = 5
 
-    def update(self, event=None, enemys=None):
-        for enemy in enemys:
-            if event[K_a] or event[K_LEFT]:
-                enemy.rect = enemy.rect.move(self.speed, 0)
-
-            if event[K_d] or event[K_RIGHT]:
-                enemy.rect = enemy.rect.move(-self.speed, 0)
-
-            if event[K_w] or event[K_UP]:
-                enemy.rect = enemy.rect.move(0, self.speed)
-
-            if event[K_s] or event[K_DOWN]:
-                enemy.rect = enemy.rect.move(0, -self.speed)
+    def update(self, event=None):
+        pass
 
     def draw(self, screen):
         screen.blit(Player.image, (self.rect.x, self.rect.y))
