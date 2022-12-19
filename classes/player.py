@@ -7,8 +7,13 @@ class Player(pygame.sprite.Sprite):
     image = pygame.image.load(PATH_IMAGE + "bacterium.png")
     image = pygame.transform.scale(image, (100, 100))
 
-    def __init__(self, *groups):
+    def __init__(self, *groups, sock, address, x, y):
         super().__init__(*groups)
+
+        self.sock = sock
+        self.address = address
+        self.x = x
+        self.y = y
 
         self.image = Player.image
         self.rect = self.image.get_rect()
@@ -23,4 +28,4 @@ class Player(pygame.sprite.Sprite):
         pass
 
     def draw(self, screen):
-        screen.blit(Player.image, (self.rect.x, self.rect.y))
+        screen.blit(Player.image, (self.x, self.y))
