@@ -1,3 +1,4 @@
+import json
 import socket
 
 import pygame
@@ -11,6 +12,7 @@ client.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 client.connect((socket.gethostbyname(socket.gethostname()), 2500))
 
 player_image = pygame.image.load(PATH_IMAGE + "bacterium.png")
+eat_image = pygame.image.load(PATH_IMAGE + "eat.png")
 
 def draw(screen):
     screen.fill((0, 0, 0))
@@ -19,6 +21,18 @@ def draw(screen):
                 HEIGHT // 2 - player_image.get_height() // 2)
                 )
     pygame.display.update()
+
+
+def draw_visible(screen, visible):
+    for i in visible:
+        print(i)
+
+        # if name == "Eat":
+        #     screen.blit(pygame.transform.scale(eat_image, (obj_data[-2], obj_data[-1])), (WIDTH - obj_data[0], HEIGHT - obj_data[1]))
+        #
+        # if name == "Player":
+        #         screen.blit(pygame.transform.scale(player_image, (obj_data[-2], obj_data[-1])), (WIDTH - obj_data[0], HEIGHT - obj_data[1]))
+
 
 
 def main():
@@ -47,9 +61,12 @@ def main():
         ]
 
         client.send(f"{send_data}".encode("utf-8"))
-        size = client.recv(2**20).decode("utf-8")
-        player_image = pygame.transform.scale(player_image, (int(size), int(size)))
+        data = json.loads("{" + client.recv(2**20).decode("utf-8") + "}")
+        player_image = pygame.transform.scale(player_image, (int(data['size']), int(data['size'])))
 
+        # visible = str(client.recv(2 ** 20).decode("utf-8")).split(", ")
+
+        # draw_visible(screen, visible)
         draw(screen)
 
 if __name__ == '__main__':

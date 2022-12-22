@@ -13,6 +13,9 @@ class Eat(pygame.sprite.Sprite):
 
         self.force = random.randint(1, 5)
 
+        self.w_vision = WIDTH
+        self.h_vision = HEIGHT
+
         self.image = Eat.image
         self.rect = self.image.get_rect()
 

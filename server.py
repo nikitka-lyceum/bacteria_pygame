@@ -14,12 +14,10 @@ server.setblocking(False)
 server.listen()
 print("Working...")
 
-
 pygame.init()
+pygame.display.set_caption("Server")
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
-
-
 
 map_objects = []
 for _ in range(10):
@@ -47,7 +45,7 @@ while server_works:
     # Check player command
     for obj in map_objects:
         try:
-            data = str(obj.sock.recv(2**20).decode("utf-8")).strip("[]").replace("'", '"')
+            data = str(obj.sock.recv(2 ** 20).decode("utf-8")).strip("[]").replace("'", '"')
             keys = json.loads(data)
 
             if keys["left"]:
@@ -68,7 +66,7 @@ while server_works:
     # Send new state
     for obj in map_objects:
         try:
-            obj.sock.send(f"{obj.size}".encode("utf-8"))
+            obj.sock.send(f'"size": "{obj.force}"'.encode("utf-8"))
             obj.error = 0
 
         except Exception:
@@ -79,11 +77,31 @@ while server_works:
                     obj.sock.close()
                     map_objects.remove(obj)
 
-
     # Check event
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             server_works = False
+
+    # Check visible
+    visible = [[] for _ in range(len(map_objects))]
+
+    for i in range(len(map_objects)):
+        for j in range(i + 1, len(map_objects)):
+            dict_x = map_objects[j].rect.x - map_objects[i].rect.x
+            dict_y = map_objects[j].rect.y - map_objects[i].rect.y
+
+            if abs(dict_x) <= map_objects[i].rect.x + WIDTH // 2 and abs(dict_y) <= map_objects[i].rect.x + HEIGHT // 2 and str(map_objects[i]) != "Eat":
+                visible[i].append(f"{map_objects[i].rect.x},{map_objects[i].rect.y}")
+
+    print(visible)
+
+    # Send visible object
+    for index, obj in enumerate(map_objects):
+        try:
+            obj.sock.send(" ".join(*visible).encode("utf-8"))
+
+        except Exception:
+            pass
 
     # Draw screen
     screen.fill((10, 10, 10))
