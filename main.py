@@ -4,8 +4,7 @@ import socket
 import pygame
 from config import *
 
-from classes.player import *
-from classes.map import *
+from classes import *
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
@@ -61,8 +60,9 @@ def main():
         ]
 
         client.send(f"{send_data}".encode("utf-8"))
-        data = json.loads("{" + client.recv(2**20).decode("utf-8") + "}")
-        player_image = pygame.transform.scale(player_image, (int(data['size']), int(data['size'])))
+        server_data = json.loads(client.recv(2 ** 10).decode("utf-8").strip("[]").replace("'", '"'))
+        print(server_data)
+
 
         # visible = str(client.recv(2 ** 20).decode("utf-8")).split(", ")
 
