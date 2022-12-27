@@ -19,8 +19,11 @@ class Eat(pygame.sprite.Sprite):
         self.image = Eat.image
         self.rect = self.image.get_rect()
 
-        self.rect.x = random.randint(1, WIDTH)
-        self.rect.y = random.randint(1, HEIGHT)
+        self.x = random.randint(1, WIDTH)
+        self.y = random.randint(1, HEIGHT)
+
+        self.rect.x = self.x
+        self.rect.y = self.y
 
     def __str__(self):
         return "Eat"

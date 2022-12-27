@@ -25,13 +25,13 @@ def draw(screen):
 def draw_visible(screen, visible):
     for i in visible:
         print(i)
-
-        # if name == "Eat":
-        #     screen.blit(pygame.transform.scale(eat_image, (obj_data[-2], obj_data[-1])), (WIDTH - obj_data[0], HEIGHT - obj_data[1]))
-        #
-        # if name == "Player":
-        #         screen.blit(pygame.transform.scale(player_image, (obj_data[-2], obj_data[-1])), (WIDTH - obj_data[0], HEIGHT - obj_data[1]))
-
+        if "Player" in i:
+            x, y, size = list(map(int, i.replace("Player", "").split()))
+            screen.blit(player_image, (x, y))
+        else:
+            x, y = list(map(int, i.replace("Eat", "").split()))
+            screen.blit(eat_image, (x, y))
+#
 
 
 def main():
@@ -61,12 +61,11 @@ def main():
 
         client.send(f"{send_data}".encode("utf-8"))
         server_data = json.loads(client.recv(2 ** 10).decode("utf-8").strip("[]").replace("'", '"'))
-        print(server_data)
+        visibles = server_data["visibles"]
+        print(visibles)
 
 
-        # visible = str(client.recv(2 ** 20).decode("utf-8")).split(", ")
-
-        # draw_visible(screen, visible)
+        draw_visible(screen, visibles)
         draw(screen)
 
 if __name__ == '__main__':

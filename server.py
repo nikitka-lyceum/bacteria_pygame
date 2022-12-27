@@ -1,6 +1,9 @@
+import copy
 import json
 import socket
+
 from classes import *
+from config import *
 
 server_works = True
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -43,8 +46,6 @@ while server_works:
             try:
                 keys = json.loads(obj.sock.recv(2 ** 10).decode("utf-8").strip("[]").replace("'", '"'))
 
-                print(keys, "keys")
-
                 if keys["left"]:
                     obj.rect = obj.rect.move(-obj.speed, 0)
 
@@ -57,21 +58,44 @@ while server_works:
                 if keys["down"]:
                     obj.rect = obj.rect.move(0, obj.speed)
 
-                continue
-
             except Exception as e:
                 print(e)
 
-    for obj in map_objects:
-        if str(obj) == "Player":
+    visibles = [[] for _ in range(len(map_objects))]
+
+    for i in range(len(map_objects)):
+        for j in range(len(map_objects)):
+            if str(map_objects[i]) == "Player" and id(map_objects[i]) != id(map_objects[j]):
+                dict_x = map_objects[i].x - map_objects[j].x
+                dict_y = map_objects[i].y - map_objects[j].y
+
+                if abs(dict_x) <= 200 or abs(dict_y) <= 200:
+                    type_obj = str(map_objects[j])
+                    x = map_objects[j].x
+                    y = map_objects[j].y
+                    x = abs(dict_x)
+                    y = abs(dict_y)
+
+
+                    if type_obj == "Player":
+                        size = map_objects[j].force
+                        visibles[i].append(f"{type_obj} {x} {y} {size}")
+
+                    else:
+                        visibles[i].append(f"{type_obj} {x} {y}")
+
+
+
+    for i in range(len(map_objects)):
+        if str(map_objects[i]) == "Player":
             try:
                 server_data = [
-                    {'size': obj.force,
-                     'name': obj.name,
-                     'visible': []}
+                    {'size': map_objects[i].force,
+                     'name': map_objects[i].name,
+                     'visibles': visibles[i]}
                 ]
-                print(server_data)
-                obj.sock.send(f"{server_data}".encode("utf-8"))
+                # print(server_data)
+                map_objects[i].sock.send(f"{server_data}".encode("utf-8"))
             except Exception:
                 pass
 

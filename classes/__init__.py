@@ -1,1 +1,3 @@
-from . import *
+from .player import *
+from .eat import *
+# from .map import *
