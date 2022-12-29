@@ -31,7 +31,8 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = WIDTH // 2 - self.rect.width // 2
         self.rect.y = HEIGHT // 2 - self.rect.height // 2
 
-        self.radius_review = 300
+        self.radius_review_x = WIDTH
+        self.radius_review_y = HEIGHT
 
     def __str__(self):
         return "Player"

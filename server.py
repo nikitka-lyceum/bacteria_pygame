@@ -19,7 +19,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
 map_objects = []
-for _ in range(10):
+for _ in range(100):
     eat = Eat(color=(random.randint(0, 255),
             random.randint(0, 255),
             random.randint(0, 255)))
@@ -35,8 +35,8 @@ while server_works:
         client_socket.setblocking(True)
         new_player = Player(sock=client_socket,
                             address=address,
-                            x=random.randint(0, WIDTH),
-                            y=random.randint(0, HEIGHT))
+                            x=random.randint(0, WORLD_WIDTH),
+                            y=random.randint(0, WORLD_HEIGHT))
 
         map_objects.append(new_player)
         print(f"Присоеденился {address}")
@@ -61,8 +61,8 @@ while server_works:
                 if keys["down"]:
                     obj.rect = obj.rect.move(0, obj.speed)
 
-            except Exception as e:
-                print(e)
+            except Exception:
+                pass
 
     visibles = [[] for _ in range(len(map_objects))]
 
@@ -72,7 +72,7 @@ while server_works:
                 dict_x = map_objects[i].x - map_objects[j].x
                 dict_y = map_objects[i].y - map_objects[j].y
 
-                if abs(dict_x) <= map_objects[i].radius_review and abs(dict_y) <= map_objects[i].radius_review:
+                if abs(dict_x) <= map_objects[i].radius_review_x and abs(dict_y) <= map_objects[i].radius_review_y:
                     type_obj = str(map_objects[j])
                     x = map_objects[j].x
                     y = map_objects[j].y
@@ -98,15 +98,16 @@ while server_works:
                      'name': map_objects[i].name,
                      'visibles': visibles[i]}
                 ]
-                # print(server_data)
                 map_objects[i].sock.send(f"{server_data}".encode("utf-8"))
 
-                map_objects[i].error = 0
+            map_objects[i].error = 0
+
 
         except Exception:
             map_objects[i].error += 1
             if map_objects[i].error >= 200:
                 map_objects.remove(map_objects[i])
+
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

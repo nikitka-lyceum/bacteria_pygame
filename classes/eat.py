@@ -23,8 +23,8 @@ class Eat(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect()
 
-        self.x = random.randint(1, WIDTH)
-        self.y = random.randint(1, HEIGHT)
+        self.x = random.randint(1, WORLD_WIDTH)
+        self.y = random.randint(1, WORLD_HEIGHT)
 
         self.error = 0
 
