@@ -31,11 +31,14 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = WIDTH // 2 - self.rect.width // 2
         self.rect.y = HEIGHT // 2 - self.rect.height // 2
 
+        self.radius_review = 300
+
     def __str__(self):
         return "Player"
 
-    def update(self, players_eats):
-        pass
+    def update(self):
+        self.x = self.rect.x
+        self.y = self.rect.y
 
     def draw(self, screen):
         font = pygame.font.Font(None, 50)

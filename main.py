@@ -11,31 +11,35 @@ client.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 client.connect((socket.gethostbyname(socket.gethostname()), 2500))
 
 player_image = pygame.image.load(PATH_IMAGE + "bacterium.png")
+player_image = pygame.transform.scale(player_image, (100, 100))
 eat_image = pygame.image.load(PATH_IMAGE + "eat.png")
+eat_image = pygame.transform.scale(eat_image, (10, 10))
 
-def draw(screen):
+player_x, player_y = 0, 0
+
+def draw(screen, visible):
     screen.fill((0, 0, 0))
-    screen.blit(player_image,
-                (WIDTH // 2 - player_image.get_width() // 2,
-                HEIGHT // 2 - player_image.get_height() // 2)
-                )
+    screen.blit(player_image, (player_x, player_y))
+
+    for i in visible:
+        if "Player" in i:
+            x, y, size = list(map(int, i.replace("Player", "").split(";")[1:]))
+            screen.blit(player_image, (x, y))
+        else:
+            type_obj, x, y, color = i.split(";")
+            print(i)
+            x = int(x)
+            y = int(y)
+            color = tuple(map(int, color.split(",")))
+            eat_image_copy = eat_image.copy()
+            eat_image_copy.fill(color)
+            screen.blit(eat_image_copy, (x, y))
+
     pygame.display.update()
 
 
-def draw_visible(screen, visible):
-    for i in visible:
-        print(i)
-        if "Player" in i:
-            x, y, size = list(map(int, i.replace("Player", "").split()))
-            screen.blit(player_image, (x, y))
-        else:
-            x, y = list(map(int, i.replace("Eat", "").split()))
-            screen.blit(eat_image, (x, y))
-#
-
-
 def main():
-    global player_image
+    global player_image, player_x, player_y
     pygame.init()
     pygame.display.set_caption("Bacterium")
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -62,11 +66,11 @@ def main():
         client.send(f"{send_data}".encode("utf-8"))
         server_data = json.loads(client.recv(2 ** 10).decode("utf-8").strip("[]").replace("'", '"'))
         visibles = server_data["visibles"]
-        print(visibles)
+        player_x = server_data["x"]
+        player_y = server_data["y"]
 
 
-        draw_visible(screen, visibles)
-        draw(screen)
+        draw(screen, visibles)
 
 if __name__ == '__main__':
     main()

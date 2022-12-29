@@ -20,7 +20,10 @@ clock = pygame.time.Clock()
 
 map_objects = []
 for _ in range(10):
-    map_objects.append(Eat())
+    eat = Eat(color=(random.randint(0, 255),
+            random.randint(0, 255),
+            random.randint(0, 255)))
+    map_objects.append(eat)
 
 
 
@@ -69,35 +72,41 @@ while server_works:
                 dict_x = map_objects[i].x - map_objects[j].x
                 dict_y = map_objects[i].y - map_objects[j].y
 
-                if abs(dict_x) <= 200 or abs(dict_y) <= 200:
+                if abs(dict_x) <= map_objects[i].radius_review and abs(dict_y) <= map_objects[i].radius_review:
                     type_obj = str(map_objects[j])
                     x = map_objects[j].x
                     y = map_objects[j].y
-                    x = abs(dict_x)
-                    y = abs(dict_y)
 
 
                     if type_obj == "Player":
                         size = map_objects[j].force
-                        visibles[i].append(f"{type_obj} {x} {y} {size}")
+                        visibles[i].append(f"{type_obj};{x};{y};{size}")
 
                     else:
-                        visibles[i].append(f"{type_obj} {x} {y}")
+                        color = map_objects[j].color
+                        visibles[i].append(f"{type_obj};{x};{y};{color[0]},{color[1]},{color[2]}")
 
 
 
     for i in range(len(map_objects)):
-        if str(map_objects[i]) == "Player":
-            try:
+        try:
+            if str(map_objects[i]) == "Player":
                 server_data = [
-                    {'size': map_objects[i].force,
+                    {'x': map_objects[i].rect.x,
+                     'y': map_objects[i].rect.y,
+                     'size': map_objects[i].force,
                      'name': map_objects[i].name,
                      'visibles': visibles[i]}
                 ]
                 # print(server_data)
                 map_objects[i].sock.send(f"{server_data}".encode("utf-8"))
-            except Exception:
-                pass
+
+                map_objects[i].error = 0
+
+        except Exception:
+            map_objects[i].error += 1
+            if map_objects[i].error >= 200:
+                map_objects.remove(map_objects[i])
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -108,6 +117,7 @@ while server_works:
 
     for obj in map_objects:
         obj.draw(screen)
+        obj.update()
 
     pygame.display.update()
 
