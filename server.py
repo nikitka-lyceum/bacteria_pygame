@@ -21,11 +21,9 @@ clock = pygame.time.Clock()
 map_objects = []
 for _ in range(100):
     eat = Eat(color=(random.randint(0, 255),
-            random.randint(0, 255),
-            random.randint(0, 255)))
+                     random.randint(0, 255),
+                     random.randint(0, 255)))
     map_objects.append(eat)
-
-
 
 while server_works:
     clock.tick(FPS)
@@ -68,7 +66,7 @@ while server_works:
 
     for i in range(len(map_objects)):
         for j in range(len(map_objects)):
-            if str(map_objects[i]) == "Player" and id(map_objects[i]) != id(map_objects[j]):
+            if str(map_objects[i]) == "Player":
                 dict_x = map_objects[i].x - map_objects[j].x
                 dict_y = map_objects[i].y - map_objects[j].y
 
@@ -76,7 +74,6 @@ while server_works:
                     type_obj = str(map_objects[j])
                     x = map_objects[j].x
                     y = map_objects[j].y
-
 
                     if type_obj == "Player":
                         size = map_objects[j].force
@@ -86,7 +83,19 @@ while server_works:
                         color = map_objects[j].color
                         visibles[i].append(f"{type_obj};{x};{y};{color[0]},{color[1]},{color[2]}")
 
+                if str(map_objects[j]) == "Player":
+                    if abs(dict_x) <= map_objects[j].radius_review_x and abs(dict_y) <= map_objects[j].radius_review_y:
+                        type_obj = str(map_objects[i])
+                        x = map_objects[i].x
+                        y = map_objects[i].y
 
+                        if type_obj == "Player":
+                            size = map_objects[i].force
+                            visibles[j].append(f"{type_obj};{x};{y};{size}")
+
+                        else:
+                            color = map_objects[i].color
+                            visibles[j].append(f"{type_obj};{x};{y};{color[0]},{color[1]},{color[2]}")
 
     for i in range(len(map_objects)):
         try:
@@ -107,6 +116,25 @@ while server_works:
             map_objects[i].error += 1
             if map_objects[i].error >= 200:
                 map_objects.remove(map_objects[i])
+
+    for i in range(len(map_objects)):
+        for j in range(i + 1, len(map_objects)):
+
+            if str(map_objects[i]) == "Player":
+                if map_objects[i].rect.colliderect(map_objects[j].rect):
+
+                    if str(map_objects[j]) == "Player":
+                        if map_objects[i].force > map_objects[j].force:
+                            map_objects[i].force += map_objects[j].force // 7
+                            map_objects.remove(map_objects[j])
+
+                        else:
+                            map_objects[j].force += map_objects[i].force // 7
+                            map_objects.remove(map_objects[i])
+
+                    else:
+                        map_objects[i].force += map_objects[j].force
+                        map_objects.remove(map_objects[j])
 
 
     for event in pygame.event.get():

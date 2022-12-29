@@ -31,6 +31,7 @@ def draw(screen, visible):
     for i in visible:
         if "Player" in i:
             x, y, size = list(map(int, i.replace("Player", "").split(";")[1:]))
+            x, y = camera.apply(x, y)
             screen.blit(player_image, (x, y))
         else:
             type_obj, x, y, color = i.split(";")
