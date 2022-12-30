@@ -43,10 +43,12 @@ while server_works:
         map_objects.append(new_player)
 
         print(f"Присоеденился {address}")
-        for _ in range(100):
-            map_objects.append(Eat(color=(random.randint(0, 255),
-                                          random.randint(0, 255),
-                                          random.randint(0, 255))))
+
+        if len(map_objects) <= 150:
+            for _ in range(100):
+                map_objects.append(Eat(color=(random.randint(0, 255),
+                                              random.randint(0, 255),
+                                              random.randint(0, 255))))
 
     except Exception:
         pass

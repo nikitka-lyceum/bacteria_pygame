@@ -21,8 +21,6 @@ camera = Camera()
 
 def draw(screen, visible):
     screen.fill((10, 10, 10))
-    # screen.blit(player_image, (WIDTH // 2 - player_image.get_rect().width // 2,
-    #                            HEIGHT // 2 - player_image.get_rect().height // 2))
 
     pygame.display.set_caption(f"{player_x}, {player_y}")
 
