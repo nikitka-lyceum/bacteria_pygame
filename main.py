@@ -21,8 +21,10 @@ camera = Camera()
 
 def draw(screen, visible):
     screen.fill((10, 10, 10))
-    screen.blit(player_image, (WIDTH // 2 - player_image.get_rect().width // 2,
-                               HEIGHT // 2 - player_image.get_rect().height // 2))
+    # screen.blit(player_image, (WIDTH // 2 - player_image.get_rect().width // 2,
+    #                            HEIGHT // 2 - player_image.get_rect().height // 2))
+
+    pygame.display.set_caption(f"{player_x}, {player_y}")
 
     font = pygame.font.Font(None, 20)
     size_text = font.render(f"Сила: {player_size}", True, (20, 255, 35))
@@ -35,7 +37,6 @@ def draw(screen, visible):
             screen.blit(player_image, (x, y))
         else:
             type_obj, x, y, color = i.split(";")
-            print(i)
             x, y = camera.apply(int(x), int(y))
             color = tuple(map(int, color.split(",")))
             eat_image_copy = eat_image.copy()
@@ -46,7 +47,7 @@ def draw(screen, visible):
 
 
 def main():
-    global player_image, player_x, player_y
+    global player_image, player_x, player_y, player_size
     pygame.init()
     pygame.display.set_caption("Bacterium")
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -71,7 +72,7 @@ def main():
         ]
 
         client.send(f"{send_data}".encode("utf-8"))
-        server_data = json.loads(client.recv(2 ** 10).decode("utf-8").strip("[]").replace("'", '"'))
+        server_data = json.loads(client.recv(4 ** 10).decode("utf-8").strip("[]").replace("'", '"'))
         visibles = server_data["visibles"]
         player_x = server_data["x"]
         player_y = server_data["y"]

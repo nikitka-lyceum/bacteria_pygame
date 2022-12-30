@@ -2,6 +2,8 @@ import copy
 import json
 import socket
 
+import pygame.sprite
+
 from classes import *
 from config import *
 
@@ -19,14 +21,16 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
 map_objects = []
-for _ in range(100):
-    eat = Eat(color=(random.randint(0, 255),
-                     random.randint(0, 255),
-                     random.randint(0, 255)))
-    map_objects.append(eat)
+# for _ in range(150):
+#     map_objects.append(Eat(color=(random.randint(0, 255),
+#                      random.randint(0, 255),
+#                      random.randint(0, 255))))
 
 while server_works:
     clock.tick(FPS)
+
+    map_objects = sorted(map_objects, key=lambda x: str(x) == "Player", reverse=True)
+
     # Connect new player
     try:
         client_socket, address = server.accept()
@@ -37,7 +41,12 @@ while server_works:
                             y=random.randint(0, WORLD_HEIGHT))
 
         map_objects.append(new_player)
+
         print(f"Присоеденился {address}")
+        for _ in range(100):
+            map_objects.append(Eat(color=(random.randint(0, 255),
+                                          random.randint(0, 255),
+                                          random.randint(0, 255))))
 
     except Exception:
         pass
@@ -67,13 +76,13 @@ while server_works:
     for i in range(len(map_objects)):
         for j in range(len(map_objects)):
             if str(map_objects[i]) == "Player":
-                dict_x = map_objects[i].x - map_objects[j].x
-                dict_y = map_objects[i].y - map_objects[j].y
+                dict_x = map_objects[i].rect.x - map_objects[j].rect.x
+                dict_y = map_objects[i].rect.y - map_objects[j].rect.y
 
                 if abs(dict_x) <= map_objects[i].radius_review_x and abs(dict_y) <= map_objects[i].radius_review_y:
                     type_obj = str(map_objects[j])
-                    x = map_objects[j].x
-                    y = map_objects[j].y
+                    x = map_objects[j].rect.x
+                    y = map_objects[j].rect.y
 
                     if type_obj == "Player":
                         size = map_objects[j].force
@@ -86,8 +95,8 @@ while server_works:
                 if str(map_objects[j]) == "Player":
                     if abs(dict_x) <= map_objects[j].radius_review_x and abs(dict_y) <= map_objects[j].radius_review_y:
                         type_obj = str(map_objects[i])
-                        x = map_objects[i].x
-                        y = map_objects[i].y
+                        x = map_objects[i].rect.x
+                        y = map_objects[i].rect.y
 
                         if type_obj == "Player":
                             size = map_objects[i].force
@@ -100,6 +109,7 @@ while server_works:
     for i in range(len(map_objects)):
         try:
             if str(map_objects[i]) == "Player":
+                print(map_objects[i].force)
                 server_data = [
                     {'x': map_objects[i].rect.x,
                      'y': map_objects[i].rect.y,
@@ -113,28 +123,31 @@ while server_works:
 
 
         except Exception:
-            map_objects[i].error += 1
-            if map_objects[i].error >= 200:
+            try:
                 map_objects.remove(map_objects[i])
+            except Exception:
+                pass
 
     for i in range(len(map_objects)):
         for j in range(i + 1, len(map_objects)):
+            try:
+                if str(map_objects[i]) == "Player":
+                    if map_objects[i].rect.colliderect(map_objects[j].rect):
+                        if str(map_objects[j]) == "Player":
+                            if map_objects[i].force > map_objects[j].force:
+                                map_objects[i].force += map_objects[j].force // 7
+                                map_objects.remove(map_objects[j])
 
-            if str(map_objects[i]) == "Player":
-                if map_objects[i].rect.colliderect(map_objects[j].rect):
-
-                    if str(map_objects[j]) == "Player":
-                        if map_objects[i].force > map_objects[j].force:
-                            map_objects[i].force += map_objects[j].force // 7
-                            map_objects.remove(map_objects[j])
+                            else:
+                                map_objects[j].force += map_objects[i].force // 7
+                                map_objects.remove(map_objects[i])
 
                         else:
-                            map_objects[j].force += map_objects[i].force // 7
-                            map_objects.remove(map_objects[i])
-
-                    else:
-                        map_objects[i].force += map_objects[j].force
-                        map_objects.remove(map_objects[j])
+                            map_objects[i].force = map_objects[j].force + map_objects[i].force
+                            print(map_objects[i].force)
+                            map_objects.remove(map_objects[j])
+            except Exception:
+                pass
 
 
     for event in pygame.event.get():

@@ -11,32 +11,24 @@ class Eat(pygame.sprite.Sprite):
     def __init__(self, *groups, color):
         super().__init__(*groups)
 
-        self.force = random.randint(1, 5)
+        self.color = color
 
-        self.w_vision = WIDTH
-        self.h_vision = HEIGHT
+        self.force = random.randint(1, 5)
+        self.error = 0
 
         self.image = Eat.image.copy()
         self.image.fill(color)
-
-        self.color = color
-
         self.rect = self.image.get_rect()
 
-        self.x = random.randint(1, WORLD_WIDTH)
-        self.y = random.randint(1, WORLD_HEIGHT)
-
-        self.error = 0
-
-        self.rect.x = self.x
-        self.rect.y = self.y
+        self.rect.x = random.randint(1, WORLD_WIDTH)
+        self.rect.y = random.randint(1, WORLD_HEIGHT)
 
     def __str__(self):
         return "Eat"
 
     def update(self):
-        self.x = self.rect.x
-        self.y = self.rect.y
+        pass
+
 
     def draw(self, screen):
         screen.blit(self.image, (self.rect.x, self.rect.y))
