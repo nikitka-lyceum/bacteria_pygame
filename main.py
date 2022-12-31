@@ -10,42 +10,51 @@ client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 client.connect((socket.gethostbyname(socket.gethostname()), 2500))
 
-player_image = pygame.image.load(PATH_IMAGE + "bacterium.png")
-player_image = pygame.transform.scale(player_image, (100, 100))
 eat_image = pygame.image.load(PATH_IMAGE + "eat.png")
-eat_image = pygame.transform.scale(eat_image, (10, 10))
+eat_image = pygame.transform.scale(eat_image, (EAT_SIZE, EAT_SIZE))
 
 player_x, player_y, player_size = 0, 0, 100
 
+scale = 1
+last_size = 0
+
 camera = Camera()
+
 
 def draw(screen, visible):
     screen.fill((10, 10, 10))
 
+    screen.blit(pygame.transform.scale(pygame.image.load(PATH_IMAGE + "bacterium.png"), (player_size, player_size)),
+                                    (WIDTH // 2 - player_size // 2, HEIGHT // 2 - player_size // 2))
+
     pygame.display.set_caption(f"{player_x}, {player_y}")
 
     font = pygame.font.Font(None, 20)
-    size_text = font.render(f"Сила: {player_size}", True, (20, 255, 35))
+    size_text = font.render(f"Размер: {player_size}", True, (20, 255, 35))
     screen.blit(size_text, (WIDTH - size_text.get_width() - 5, 5))
 
     for i in visible:
+        camera.update(player_x, player_y, player_size, player_size)
         if "Player" in i:
             x, y, size = list(map(int, i.replace("Player", "").split(";")[1:]))
+            # size //= scale
+            # x, y = x // scale, y // scale
             x, y = camera.apply(x, y)
-            screen.blit(player_image, (x, y))
+            screen.blit(pygame.transform.scale(pygame.image.load(PATH_IMAGE + "bacterium.png"), (size, size)), (x, y))
         else:
             type_obj, x, y, color = i.split(";")
             x, y = camera.apply(int(x), int(y))
+            # x, y = x // scale, y // scale
             color = tuple(map(int, color.split(",")))
             eat_image_copy = eat_image.copy()
             eat_image_copy.fill(color)
-            screen.blit(eat_image_copy, (x, y))
+            screen.blit(pygame.transform.scale(eat_image_copy, (EAT_SIZE, EAT_SIZE)), (x, y))
 
     pygame.display.update()
 
 
 def main():
-    global player_image, player_x, player_y, player_size
+    global player_image, player_x, player_y, player_size, scale, last_size
     pygame.init()
     pygame.display.set_caption("Bacterium")
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -56,7 +65,6 @@ def main():
     while running:
         clock.tick(FPS)
         keys = pygame.key.get_pressed()
-
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -78,7 +86,12 @@ def main():
 
         draw(screen, visibles)
 
-        camera.update(player_x, player_y, player_size, player_size)
+        if player_size >= last_size + 1:
+            last_size = player_size
+            scale += 1
+
+
+
 
 if __name__ == '__main__':
     main()

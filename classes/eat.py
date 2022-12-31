@@ -6,7 +6,7 @@ from config import *
 
 class Eat(pygame.sprite.Sprite):
     image = pygame.image.load(PATH_IMAGE + "eat.png")
-    image = pygame.transform.scale(image, (10, 10))
+    image = pygame.transform.scale(image, (EAT_SIZE, EAT_SIZE))
 
     def __init__(self, *groups, color):
         super().__init__(*groups)

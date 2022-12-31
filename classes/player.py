@@ -17,7 +17,7 @@ class Player(pygame.sprite.Sprite):
         self.error = 0
 
         self.speed = 15
-        self.force = 100
+        self.force = PLAYER_SIZE
 
         Player.image = pygame.transform.scale(Player.image, (self.force, self.force))
 
@@ -36,11 +36,19 @@ class Player(pygame.sprite.Sprite):
         return "Player"
 
     def update(self):
-        pass
+        old_x = self.rect.x
+        old_y = self.rect.y
+
+
+        self.image = pygame.transform.scale(pygame.image.load(PATH_IMAGE + "bacterium.png"), (self.force, self.force))
+        self.rect = self.image.get_rect()
+
+        self.rect.x = old_x
+        self.rect.y = old_y
 
     def draw(self, screen):
         font = pygame.font.Font(None, 50)
         text = font.render(f"{self.name}: {self.force}", True, (20, 100, 250))
 
-        screen.blit(text, (self.rect.x - self.image.get_width() // 2, self.rect.y - self.image.get_height()))
-        screen.blit(Player.image, (self.rect.x, self.rect.y))
+        screen.blit(text, (self.rect.x, self.rect.y - 5))
+        screen.blit(self.image, (self.rect.x, self.rect.y))
