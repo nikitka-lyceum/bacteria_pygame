@@ -73,6 +73,7 @@ threading.Thread(target=update_timer).start()
 while server_works:
     clock.tick(FPS)
 
+    # Handler command
     for obj in map_objects:
         if str(obj) == "Player":
             try:
@@ -93,6 +94,8 @@ while server_works:
             except Exception:
                 pass
 
+
+    # Find visible enemy
     visibles = [[] for _ in range(len(map_objects))]
 
     for i in range(len(map_objects)):
@@ -103,8 +106,6 @@ while server_works:
 
                 if abs(dict_x) <= map_objects[i].radius_review_x and abs(dict_y) <= map_objects[i].radius_review_y:
                     type_obj = str(map_objects[j])
-                    # x = map_objects[j].rect.x / map_objects[i].scale
-                    # y = map_objects[j].rect.y / map_objects[i].scale
 
                     x = round(dict_x / map_objects[i].scale) * -1
                     y = round(dict_y / map_objects[i].scale) * -1
@@ -117,6 +118,7 @@ while server_works:
                         color = map_objects[j].color
                         visibles[i].append(f"{type_obj};{x};{y};{color[0]},{color[1]},{color[2]}")
 
+    # Send server data
     for i in range(len(map_objects)):
         try:
             if str(map_objects[i]) == "Player":
@@ -139,6 +141,7 @@ while server_works:
             except Exception:
                 pass
 
+    # Check collide
     for i in range(len(map_objects)):
         for j in range(i + 1, len(map_objects)):
             try:
@@ -160,12 +163,13 @@ while server_works:
             except Exception:
                 pass
 
+    # Check event
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             server_works = False
 
     # Draw screen
-    screen.fill((10, 10, 10))
+    screen.fill(BACKGROUND_COLOR)
 
     for obj in map_objects:
         obj.draw(screen)

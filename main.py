@@ -22,26 +22,34 @@ camera = Camera()
 
 
 def draw(screen, visible):
-    screen.fill((10, 10, 10))
+    pygame.display.set_caption(f"{player_x}, {player_y}")
 
+
+    screen.fill(BACKGROUND_COLOR)
+
+    # Draw self
     screen.blit(pygame.transform.scale(pygame.image.load(PATH_IMAGE + "bacterium.png"),
                                        (player_size / scale, player_size / scale)),
                 (WIDTH // 2 - player_size / scale // 2, HEIGHT // 2 - player_size / scale // 2))
 
-    pygame.display.set_caption(f"{player_x}, {player_y}")
-
+    # Draw info
     font = pygame.font.Font(None, 20)
     size_text = font.render(f"Размер: {player_size}", True, (20, 255, 35))
     screen.blit(size_text, (WIDTH - size_text.get_width() - 5, 5))
 
     for i in visible:
+        # Update camera
         camera.update(player_x, player_y, player_size / scale, player_size / scale)
+
+        # Draw enemy player
         if "Player" in i:
             x, y, size = list(map(int, i.replace("Player", "").split(";")[1:]))
             x, y = player_x + x, player_y + y
             x, y = camera.apply(x, y)
 
             screen.blit(pygame.transform.scale(pygame.image.load(PATH_IMAGE + "bacterium.png"), (size, size)), (x, y))
+
+        # Draw static bacterium
         else:
             type_obj, x, y, color = i.split(";")
             x, y = player_x + int(x), player_y + int(y)
@@ -51,6 +59,7 @@ def draw(screen, visible):
             eat_image_copy.fill(color)
             screen.blit(pygame.transform.scale(eat_image_copy, (EAT_SIZE / scale, EAT_SIZE / scale)), (x, y))
 
+    # Update display
     pygame.display.update()
 
 
@@ -65,27 +74,33 @@ def main():
     running = True
     while running:
         clock.tick(FPS)
-        keys = pygame.key.get_pressed()
 
+        # Check event
+        keys = pygame.key.get_pressed()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
+
+        # Send client data
         send_data = [
             {"left": int(keys[K_a] or keys[K_LEFT]),
              "right": int(keys[K_d] or keys[K_RIGHT]),
              "up": int(keys[K_w] or keys[K_UP]),
              "down": int(keys[K_s] or keys[K_DOWN])}
         ]
-
         client.send(f"{send_data}".encode("utf-8"))
-        server_data = json.loads(client.recv(4 ** 10).decode("utf-8").strip("[]").replace("'", '"'))
+
+
+        # Apply server data
+        server_data = json.loads(client.recv(3 ** 10).decode("utf-8").strip("[]").replace("'", '"'))
         visibles = server_data["visibles"]
         player_x = server_data["x"]
         player_y = server_data["y"]
         player_size = round(server_data["size"])
         scale = server_data["scale"]
 
+        # Draw world
         draw(screen, visibles)
 
 
