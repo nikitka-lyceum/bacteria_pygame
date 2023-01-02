@@ -8,10 +8,13 @@ import pygame.sprite
 from classes import *
 from config import *
 
+ip = socket.gethostbyname(socket.gethostname())
+print(ip)
+
 server_works = True
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-server.bind((socket.gethostbyname(socket.gethostname()), 2600))
+server.bind((ip, 2600))
 server.setblocking(False)
 server.listen()
 print("Server Working...")
@@ -111,35 +114,12 @@ while server_works:
                     y = round(dict_y / map_objects[i].scale) * -1
 
                     if type_obj == "Player":
-                        size = map_objects[j].force // map_objects[i].scale
+                        size = round(map_objects[j].force // map_objects[i].scale)
                         visibles[i].append(f"{type_obj};{x};{y};{size}")
 
                     else:
                         color = map_objects[j].color
                         visibles[i].append(f"{type_obj};{x};{y};{color[0]},{color[1]},{color[2]}")
-
-    # Send server data
-    for i in range(len(map_objects)):
-        try:
-            if str(map_objects[i]) == "Player":
-                server_data = [
-                    {'x': map_objects[i].rect.x,
-                     'y': map_objects[i].rect.y,
-                     'size': map_objects[i].force,
-                     'name': map_objects[i].name,
-                     'scale': map_objects[i].scale,
-                     'visibles': visibles[i]}
-                ]
-                map_objects[i].sock.send(f"{server_data}".encode("utf-8"))
-
-            map_objects[i].error = 0
-
-
-        except Exception:
-            try:
-                map_objects.remove(map_objects[i])
-            except Exception:
-                pass
 
     # Check collide
     for i in range(len(map_objects)):
@@ -147,19 +127,48 @@ while server_works:
             try:
                 if str(map_objects[i]) == "Player":
                     if map_objects[i].rect.colliderect(map_objects[j].rect):
+
                         if str(map_objects[j]) == "Player":
                             if map_objects[i].force > map_objects[j].force:
                                 map_objects[i].force += map_objects[j].force // 5
-                                map_objects.remove(map_objects[j])
+                                map_objects[j].isLive = 0
 
-                            else:
+                            elif map_objects[i].force < map_objects[j].force:
                                 map_objects[j].force += map_objects[i].force // 5
-                                map_objects.remove(map_objects[i])
+                                map_objects[i].isLive = 0
 
                         else:
-                            map_objects[i].force = map_objects[j].force + map_objects[i].force
-                            print(map_objects[i].force)
+                            map_objects[i].force += map_objects[j].force
                             map_objects.remove(map_objects[j])
+
+            except Exception:
+                pass
+
+    # Send server data
+    for i in range(len(map_objects)):
+        try:
+            map_objects[i].error = 0
+
+            if str(map_objects[i]) == "Player":
+
+                server_data = [
+                    {'x': map_objects[i].rect.x,
+                     'y': map_objects[i].rect.y,
+                     'size': map_objects[i].force,
+                     'name': map_objects[i].name,
+                     'scale': map_objects[i].scale,
+                     'isLive': map_objects[i].isLive,
+                     'visibles': visibles[i]}
+                ]
+                map_objects[i].sock.send(f"{server_data}".encode("utf-8"))
+
+                if map_objects[i].isLive == 0:
+                    pass
+
+        except Exception:
+            try:
+                map_objects[i].sock.close()
+                map_objects.remove(map_objects[i])
             except Exception:
                 pass
 

@@ -4,6 +4,7 @@ import pygame.sprite
 
 from config import *
 
+
 class Eat(pygame.sprite.Sprite):
     image = pygame.image.load(PATH_IMAGE + "eat.png")
     image = pygame.transform.scale(image, (EAT_SIZE, EAT_SIZE))
@@ -29,7 +30,5 @@ class Eat(pygame.sprite.Sprite):
     def update(self):
         pass
 
-
     def draw(self, screen):
         screen.blit(self.image, (self.rect.x, self.rect.y))
-

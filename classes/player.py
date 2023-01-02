@@ -15,8 +15,9 @@ class Player(pygame.sprite.Sprite):
         self.sock = sock
         self.address = address
         self.error = 0
+        self.isLive = 1
 
-        self.speed = 15
+        self.speed = 20
         self.force = PLAYER_SIZE
 
         Player.image = pygame.transform.scale(Player.image, (self.force, self.force))
@@ -41,7 +42,6 @@ class Player(pygame.sprite.Sprite):
         old_x = self.rect.x
         old_y = self.rect.y
 
-
         self.image = pygame.transform.scale(pygame.image.load(PATH_IMAGE + "bacterium.png"), (self.force, self.force))
         self.rect = self.image.get_rect()
 
@@ -50,12 +50,14 @@ class Player(pygame.sprite.Sprite):
 
         if (self.force >= self.radius_review_x / 4 or self.force >= self.radius_review_y / 4) and self.force <= 1100:
             self.scale *= 2
+            self.speed -= 3
             self.radius_review_x = WIDTH * self.scale
             self.radius_review_y = HEIGHT * self.scale
 
         if self.force < self.radius_review_x / 8 and self.force < self.radius_review_y / 8:
             if self.scale > 1:
                 self.scale //= 2
+                self.speed += 3
                 self.radius_review_x = WIDTH * self.scale
                 self.radius_review_y = HEIGHT * self.scale
 
