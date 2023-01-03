@@ -28,11 +28,6 @@ map_objects = []
 
 timer = 0
 
-
-def sorted_player(obj):
-    result = []
-
-
 def new_users():
     global map_objects
 
