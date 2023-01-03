@@ -3,6 +3,7 @@ import socket
 import sys
 
 import pygame
+from pygame import *
 from config import *
 
 from classes import *
