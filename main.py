@@ -122,7 +122,7 @@ def draw(screen, visible):
 
 
     for i in visible:
-        print(i)
+        camera.update(player_x, player_y, player_size / scale, player_size / scale, WIDTH, HEIGHT)
         if i["type_obj"] == "Player":
             x = i["x"]
             y = i["y"]
@@ -136,35 +136,10 @@ def draw(screen, visible):
             y = i["y"]
             x, y = camera.apply(player_x + x, player_y + y)
             color = tuple(map(int, i["color"].strip("()").split(', ')))
-            print(color)
 
             eat_image_copy = eat_image.copy()
             eat_image_copy.fill(color)
             screen.blit(pygame.transform.scale(eat_image_copy, (EAT_SIZE / scale, EAT_SIZE / scale)), (x, y))
-
-        # Update camera
-        # camera.update(player_x, player_y, player_size / scale, player_size / scale, WIDTH, HEIGHT)
-        #
-        # # Draw enemy player
-        # if "Player" in i:
-        #     x, y, size = list(map(int, i.replace("Player", "").split(";")[1:]))
-        #     # x, y = WIDTH // 2 + x + player_size, HEIGHT // 2 + y + player_size
-        #     x, y = camera.apply(x, y)
-        #
-        #     screen.blit(pygame.transform.scale(pygame.image.load(PATH_IMAGE + "bacterium.png"), (size, size)), (x, y))
-        #
-        # # Draw static bacterium
-        # else:
-        #     type_obj, x, y, color = i.split(";")
-        #     x, y = player_x + int(x), player_y + int(y)
-        #     # x, y = WIDTH // 2 + x, HEIGHT // 2 + y
-        #     x, y = camera.apply(int(x), int(y))
-        #     color = tuple(map(int, color.split(",")))
-        #     eat_image_copy = eat_image.copy()
-        #     eat_image_copy.fill(color)
-        #     screen.blit(pygame.transform.scale(eat_image_copy, (EAT_SIZE / scale, EAT_SIZE / scale)), (x, y))
-
-
 
     # Update display
     pygame.display.update()
@@ -211,7 +186,7 @@ def main():
             visibles = server_data["visibles"]
             player_x = server_data["x"]
             player_y = server_data["y"]
-            player_size = round(server_data["size"])
+            player_size = server_data["size"]
             isLive = server_data["isLive"]
             scale = server_data["scale"]
 
@@ -224,8 +199,7 @@ def main():
         except socket.timeout:
             pass
 
-        except Exception as e:
-            print(e)
+        except Exception:
             terminate()
 
         player_x = WIDTH // 2 - player_x

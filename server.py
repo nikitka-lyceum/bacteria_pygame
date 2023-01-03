@@ -173,7 +173,7 @@ while server_works:
                 server_data = [
                     {'x': map_objects[i].rect.x,
                      'y': map_objects[i].rect.y,
-                     'size': map_objects[i].force,
+                     'size': round(map_objects[i].force),
                      'name': map_objects[i].name,
                      'scale': map_objects[i].scale,
                      'isLive': map_objects[i].isLive,
