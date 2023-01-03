@@ -32,7 +32,7 @@ def terminate():
 
 
 def die_screen(screen):
-    intro_text = ["Вы умерли"]
+    intro_text = [f"Вы умерли"]
 
     running = True
     while running:
@@ -148,7 +148,7 @@ def main():
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-    client.settimeout(5)
+    client.settimeout(2)
     client.connect((socket.gethostbyname(socket.gethostname()), 2600))
 
     running = True
@@ -188,13 +188,13 @@ def main():
             # Draw world
             draw(screen, visibles)
 
-        except Exception as e:
-            print(e)
+        except socket.timeout:
+            pass
 
-
+        except Exception:
+            terminate()
 
     client.close()
-
     die_screen(screen)
 
 if __name__ == '__main__':

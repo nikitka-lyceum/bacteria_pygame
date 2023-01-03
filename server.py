@@ -29,13 +29,17 @@ map_objects = []
 timer = 0
 
 
+def sorted_player(obj):
+    result = []
+
+
 def new_users():
     global map_objects
 
     while server_works:
         clock.tick(FPS)
 
-        map_objects = sorted(map_objects, key=lambda x: str(x) == "Player", reverse=True)
+        map_objects = sorted(map_objects, key=lambda x: (str(x) == "Player", x.force), reverse=True)
 
         # Connect new player
         try:
