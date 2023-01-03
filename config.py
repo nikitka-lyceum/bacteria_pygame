@@ -2,7 +2,7 @@ from win32api import GetSystemMetrics
 
 # WIDTH, HEIGHT = (GetSystemMetrics(0), GetSystemMetrics(1))
 WIDTH, HEIGHT = (500, 500)
-FPS = 60
+FPS = 120
 
 WORLD_WIDTH, WORLD_HEIGHT = (4000, 4000)
 

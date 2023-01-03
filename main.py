@@ -107,7 +107,7 @@ def draw(screen, visible):
     screen.fill(BACKGROUND_COLOR)
 
     # Draw grid
-    grid.draw()
+    # grid.draw()
 
     # Draw self
     screen.blit(pygame.transform.scale(pygame.image.load(PATH_IMAGE + "bacterium.png"),
@@ -119,27 +119,50 @@ def draw(screen, visible):
     size_text = font.render(f"Размер: {player_size}", True, (20, 255, 35))
     screen.blit(size_text, (WIDTH - size_text.get_width() - 5, 5))
 
-    for i in visible:
-        # Update camera
-        camera.update(player_x, player_y, player_size / scale, player_size / scale)
 
-        # Draw enemy player
-        if "Player" in i:
-            x, y, size = list(map(int, i.replace("Player", "").split(";")[1:]))
-            x, y = player_x + x, player_y + y
+
+    for i in visible:
+        print(i)
+        if i["type_obj"] == "Player":
+            x = i["x"]
+            y = i["y"]
+            size = i["size"]
             x, y = camera.apply(x, y)
 
             screen.blit(pygame.transform.scale(pygame.image.load(PATH_IMAGE + "bacterium.png"), (size, size)), (x, y))
 
-        # Draw static bacterium
         else:
-            type_obj, x, y, color = i.split(";")
-            x, y = player_x + int(x), player_y + int(y)
-            x, y = camera.apply(int(x), int(y))
-            color = tuple(map(int, color.split(",")))
+            x = i["x"]
+            y = i["y"]
+            x, y = camera.apply(player_x + x, player_y + y)
+            color = tuple(map(int, i["color"].strip("()").split(', ')))
+            print(color)
+
             eat_image_copy = eat_image.copy()
             eat_image_copy.fill(color)
             screen.blit(pygame.transform.scale(eat_image_copy, (EAT_SIZE / scale, EAT_SIZE / scale)), (x, y))
+
+        # Update camera
+        # camera.update(player_x, player_y, player_size / scale, player_size / scale, WIDTH, HEIGHT)
+        #
+        # # Draw enemy player
+        # if "Player" in i:
+        #     x, y, size = list(map(int, i.replace("Player", "").split(";")[1:]))
+        #     # x, y = WIDTH // 2 + x + player_size, HEIGHT // 2 + y + player_size
+        #     x, y = camera.apply(x, y)
+        #
+        #     screen.blit(pygame.transform.scale(pygame.image.load(PATH_IMAGE + "bacterium.png"), (size, size)), (x, y))
+        #
+        # # Draw static bacterium
+        # else:
+        #     type_obj, x, y, color = i.split(";")
+        #     x, y = player_x + int(x), player_y + int(y)
+        #     # x, y = WIDTH // 2 + x, HEIGHT // 2 + y
+        #     x, y = camera.apply(int(x), int(y))
+        #     color = tuple(map(int, color.split(",")))
+        #     eat_image_copy = eat_image.copy()
+        #     eat_image_copy.fill(color)
+        #     screen.blit(pygame.transform.scale(eat_image_copy, (EAT_SIZE / scale, EAT_SIZE / scale)), (x, y))
 
 
 
@@ -184,7 +207,7 @@ def main():
 
 
             # Apply server data
-            server_data = json.loads(client.recv(3 ** 10).decode("utf-8").strip("[]").replace("'", '"'))
+            server_data = json.loads(client.recv(4 ** 10).decode("utf-8").strip("[]").replace("'", '"'))
             visibles = server_data["visibles"]
             player_x = server_data["x"]
             player_y = server_data["y"]
@@ -201,13 +224,17 @@ def main():
         except socket.timeout:
             pass
 
-        except Exception:
+        except Exception as e:
+            print(e)
             terminate()
 
         player_x = WIDTH // 2 - player_x
         player_y = HEIGHT // 2 - player_y
 
         WIDTH, HEIGHT = screen.get_width(), screen.get_height()
+
+        # Update camera
+        camera.update(player_x, player_y, player_size / scale, player_size / scale, WIDTH, HEIGHT)
 
     client.close()
     die_screen(screen)

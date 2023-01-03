@@ -24,10 +24,14 @@ class Eat(pygame.sprite.Sprite):
         self.rect.x = random.randint(1, WORLD_WIDTH)
         self.rect.y = random.randint(1, WORLD_HEIGHT)
 
+
+        self.WIDTH = 0
+        self.HEIGHT = 0
+
     def __str__(self):
         return "Eat"
 
-    def update(self):
+    def update(self, *args):
         pass
 
     def draw(self, screen):

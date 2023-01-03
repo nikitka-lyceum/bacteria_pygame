@@ -81,8 +81,13 @@ while server_works:
             try:
                 keys = json.loads(obj.sock.recv(2 ** 10).decode("utf-8").strip("[]").replace("'", '"'))
 
-                obj.radius_review_x = int(keys["radius_review"].split(";")[0])
-                obj.radius_review_y = int(keys["radius_review"].split(";")[1])
+                obj.radius_review_x = int(keys["radius_review"].split(";")[0]) * obj.scale
+                obj.radius_review_y = int(keys["radius_review"].split(";")[1]) * obj.scale
+                obj.WIDTH = obj.radius_review_x
+                obj.HEIGHT = obj.radius_review_y
+
+                print(obj.radius_review_x)
+                print(obj.radius_review_y)
 
                 if keys["left"]:
                     obj.rect = obj.rect.move(-obj.speed, 0)
@@ -116,11 +121,24 @@ while server_works:
 
                     if type_obj == "Player":
                         size = round(map_objects[j].force // map_objects[i].scale)
-                        visibles[i].append(f"{type_obj};{x};{y};{size}")
+                        j_data = {
+                            'type_obj': type_obj,
+                            'nickname': map_objects[j].name,
+                            'x': x,
+                            'y': y,
+                            'size': size
+                        }
+                        visibles[i].append(j_data)
 
                     else:
-                        color = map_objects[j].color
-                        visibles[i].append(f"{type_obj};{x};{y};{color[0]},{color[1]},{color[2]}")
+                        color = str(map_objects[j].color)
+                        j_data = {
+                            'type_obj': type_obj,
+                            'x': x,
+                            'y': y,
+                            'color': color
+                        }
+                        visibles[i].append(j_data)
 
     # Check collide
     for i in range(len(map_objects)):
@@ -184,7 +202,7 @@ while server_works:
 
     for obj in map_objects:
         obj.draw(screen)
-        obj.update()
+        obj.update(obj.WIDTH, obj.HEIGHT)
 
     pygame.display.update()
 

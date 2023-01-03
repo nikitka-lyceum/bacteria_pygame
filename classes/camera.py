@@ -11,6 +11,6 @@ class Camera:
         return x + self.dx, y + self.dy
 
     # позиционировать камеру
-    def update(self, x, y, w, h):
+    def update(self, x, y, w, h, WIDTH, HEIGHT):
         self.dx = -(x + w // 2 - WIDTH // 2)
         self.dy = -(y + h // 2 - HEIGHT // 2)
