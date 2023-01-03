@@ -58,7 +58,7 @@ def update_timer():
     while server_works:
         clock.tick(FPS)
 
-        if timer >= 150 and ["E" if str(i) == "Eat" else "" for i in map_objects].count("E") + 1 <= 150:
+        if timer >= 150 and [str(i) for i in map_objects].count("Eat") + 1 <= 150:
             timer = 0
             for _ in range(random.randint(1, 20)):
                 map_objects.append(Eat(color=(random.randint(0, 255),
