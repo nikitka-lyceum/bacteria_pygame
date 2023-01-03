@@ -21,7 +21,7 @@ print("Server Working...")
 
 pygame.init()
 pygame.display.set_caption("Server")
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((500, 500), pygame.RESIZABLE)
 clock = pygame.time.Clock()
 
 map_objects = []
@@ -58,7 +58,7 @@ def update_timer():
     while server_works:
         clock.tick(FPS)
 
-        if timer >= 150 and [str(i) for i in map_objects].count("Eat") + 1 <= 150:
+        if timer >= 1 and [str(i) for i in map_objects].count("Eat") + 1 <= 150:
             timer = 0
             for _ in range(random.randint(1, 20)):
                 map_objects.append(Eat(color=(random.randint(0, 255),
@@ -81,6 +81,10 @@ while server_works:
             try:
                 keys = json.loads(obj.sock.recv(2 ** 10).decode("utf-8").strip("[]").replace("'", '"'))
 
+                if obj.radius_review_x is None or obj.radius_review_y is None:
+                    obj.radius_review_x = int(keys["radius_review"].split(";")[0])
+                    obj.radius_review_y = int(keys["radius_review"].split(";")[1])
+
                 if keys["left"]:
                     obj.rect = obj.rect.move(-obj.speed, 0)
 
@@ -95,7 +99,6 @@ while server_works:
 
             except Exception:
                 pass
-
 
     # Find visible enemy
     visibles = [[] for _ in range(len(map_objects))]
@@ -173,7 +176,8 @@ while server_works:
 
     # Check event
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        keys = pygame.key.get_pressed()
+        if event.type == pygame.QUIT or keys[K_ESCAPE]:
             server_works = False
 
     # Draw screen

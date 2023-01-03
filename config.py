@@ -1,6 +1,6 @@
-import pygame
+from win32api import GetSystemMetrics
 
-WIDTH, HEIGHT = (1000, 500)
+WIDTH, HEIGHT = (GetSystemMetrics(0), GetSystemMetrics(1))
 FPS = 60
 
 WORLD_WIDTH, WORLD_HEIGHT = (4000, 4000)

@@ -23,7 +23,7 @@ camera = Camera()
 
 pygame.init()
 pygame.display.set_caption("Bacterium")
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
 
 clock = pygame.time.Clock()
 
@@ -145,12 +145,14 @@ def draw(screen, visible):
 
 
 def main():
-    global player_image, player_x, player_y, player_size, scale, last_size, isLive
+    global player_image, player_x, player_y, player_size, scale, last_size, isLive, WIDTH, HEIGHT
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
     client.settimeout(2)
     client.connect((socket.gethostbyname(socket.gethostname()), 2600))
+
+    client.send(f"{WIDTH};{HEIGHT}".encode("utf-8"))
 
     running = True
     while running:
@@ -159,7 +161,7 @@ def main():
         # Check event
         keys = pygame.key.get_pressed()
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT or keys[K_ESCAPE]:
                 running = False
                 terminate()
 
@@ -169,7 +171,8 @@ def main():
                 {"left": int(keys[K_a] or keys[K_LEFT]),
                  "right": int(keys[K_d] or keys[K_RIGHT]),
                  "up": int(keys[K_w] or keys[K_UP]),
-                 "down": int(keys[K_s] or keys[K_DOWN])}
+                 "down": int(keys[K_s] or keys[K_DOWN]),
+                 "radius_review": f"{WIDTH};{HEIGHT}"}
             ]
             client.send(f"{send_data}".encode("utf-8"))
 

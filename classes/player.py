@@ -32,8 +32,8 @@ class Player(pygame.sprite.Sprite):
 
         self.scale = 1
 
-        self.radius_review_x = WIDTH
-        self.radius_review_y = HEIGHT
+        self.radius_review_x = None
+        self.radius_review_y = None
 
     def __str__(self):
         return "Player"
@@ -48,20 +48,21 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = old_x
         self.rect.y = old_y
 
-        if (self.force >= self.radius_review_x / 4 or self.force >= self.radius_review_y / 4) and self.force <= 1100:
-            self.scale *= 2
-            self.speed -= 3
-            self.radius_review_x = WIDTH * self.scale
-            self.radius_review_y = HEIGHT * self.scale
-
-        if self.force < self.radius_review_x / 8 and self.force < self.radius_review_y / 8:
-            if self.scale > 1:
-                self.scale //= 2
-                self.speed += 3
+        if self.radius_review_x is not None and self.radius_review_y is not None:
+            if (self.force >= self.radius_review_x / 2 or self.force >= self.radius_review_y / 2) and self.force <= 1100:
+                self.scale *= 2
+                self.speed -= 3
                 self.radius_review_x = WIDTH * self.scale
                 self.radius_review_y = HEIGHT * self.scale
 
-        self.force -= self.force / 16000
+            if self.force < self.radius_review_x / 4 and self.force < self.radius_review_y / 4:
+                if self.scale > 1:
+                    self.scale //= 2
+                    self.speed += 3
+                    self.radius_review_x = WIDTH * self.scale
+                    self.radius_review_y = HEIGHT * self.scale
+
+            self.force -= self.force / 16000
 
     def draw(self, screen):
         font = pygame.font.Font(None, 50)
