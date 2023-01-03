@@ -1,13 +1,10 @@
 import json
 import socket
 import sys
-
-import pygame
 from pygame import *
 from config import *
 
 from classes import *
-
 
 eat_image = pygame.image.load(PATH_IMAGE + "eat.png")
 eat_image = pygame.transform.scale(eat_image, (EAT_SIZE, EAT_SIZE))
@@ -22,8 +19,9 @@ last_size = 0
 camera = Camera()
 
 pygame.init()
+
 pygame.display.set_caption("Bacterium")
-screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
 grid = Grid(screen)
 clock = pygame.time.Clock()
 
@@ -104,10 +102,9 @@ def start_screen(screen):
 
 def draw(screen, visible):
     pygame.display.set_caption(f"{player_x}, {player_y}")
-    screen.fill(BACKGROUND_COLOR)
 
-    # Draw grid
-    grid.draw()
+
+    screen.fill(BACKGROUND_COLOR)
 
     # Draw self
     screen.blit(pygame.transform.scale(pygame.image.load(PATH_IMAGE + "bacterium.png"),
@@ -141,33 +138,29 @@ def draw(screen, visible):
             eat_image_copy.fill(color)
             screen.blit(pygame.transform.scale(eat_image_copy, (EAT_SIZE / scale, EAT_SIZE / scale)), (x, y))
 
-
-
     # Update display
+    grid.draww()
     pygame.display.update()
 
 
 def main():
-    global player_image, player_x, player_y, player_size, scale, last_size, isLive, WIDTH, HEIGHT
+    global player_image, player_x, player_y, player_size, scale, last_size, isLive
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
     client.settimeout(2)
     client.connect((socket.gethostbyname(socket.gethostname()), 2600))
 
-    client.send(f"{WIDTH};{HEIGHT}".encode("utf-8"))
 
     running = True
     while running:
+
         clock.tick(FPS)
 
-        # Update grid position
         grid.update(player_x, player_y, scale)
-
-        # Check event
         keys = pygame.key.get_pressed()
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or keys[K_ESCAPE]:
+            if event.type == pygame.QUIT:
                 running = False
                 terminate()
 
@@ -177,8 +170,7 @@ def main():
                 {"left": int(keys[K_a] or keys[K_LEFT]),
                  "right": int(keys[K_d] or keys[K_RIGHT]),
                  "up": int(keys[K_w] or keys[K_UP]),
-                 "down": int(keys[K_s] or keys[K_DOWN]),
-                 "radius_review": f"{WIDTH};{HEIGHT}"}
+                 "down": int(keys[K_s] or keys[K_DOWN])}
             ]
             client.send(f"{send_data}".encode("utf-8"))
 
@@ -196,18 +188,18 @@ def main():
                 running = False
 
             # Draw world
+
+
             draw(screen, visibles)
+
+            pygame.display.update()
+
 
         except socket.timeout:
             pass
 
         except Exception:
             terminate()
-
-        player_x = WIDTH // 2 - player_x
-        player_y = HEIGHT // 2 - player_y
-
-        WIDTH, HEIGHT = screen.get_width(), screen.get_height()
 
     client.close()
     die_screen(screen)

@@ -1,6 +1,7 @@
 from win32api import GetSystemMetrics
 
-WIDTH, HEIGHT = (GetSystemMetrics(0), GetSystemMetrics(1))
+# WIDTH, HEIGHT = (GetSystemMetrics(0), GetSystemMetrics(1))
+WIDTH, HEIGHT = (500, 500)
 FPS = 60
 
 WORLD_WIDTH, WORLD_HEIGHT = (4000, 4000)
@@ -13,3 +14,6 @@ BACKGROUND_COLOR = (15, 15, 15)
 PATH_DATA = "data/"
 PATH_IMAGE = PATH_DATA + "image/"
 PATH_ICON = PATH_DATA + "icon/"
+
+
+GRID_COLOUR = (150, 150, 150)

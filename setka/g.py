@@ -1,11 +1,11 @@
 import copy
 import json
+import random
 import socket
 import threading
 
 import pygame.sprite
 
-from classes import *
 from config import *
 
 ip = socket.gethostbyname(socket.gethostname())
@@ -21,12 +21,17 @@ print("Server Working...")
 
 pygame.init()
 pygame.display.set_caption("Server")
-screen = pygame.display.set_mode((500, 500), pygame.RESIZABLE)
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
 map_objects = []
 
 timer = 0
+
+
+def sorted_player(obj):
+    result = []
+
 
 def new_users():
     global map_objects
@@ -34,7 +39,7 @@ def new_users():
     while server_works:
         clock.tick(FPS)
 
-        map_objects = sorted(map_objects, key=lambda x: str(x) == "Player", reverse=True)
+        map_objects = sorted(map_objects, key=lambda x: (str(x) == "Player", x.force), reverse=True)
 
         # Connect new player
         try:
@@ -58,9 +63,9 @@ def update_timer():
     while server_works:
         clock.tick(FPS)
 
-        if timer >= 1 and [str(i) for i in map_objects].count("Eat") + 1 <= 150:
+        if timer >= 150 and ["E" if str(i) == "Eat" else "" for i in map_objects].count("E") + 1 <= 150:
             timer = 0
-            for _ in range(random.randint(1, 20)):
+            for _ in range(random.randint(1, 100)):
                 map_objects.append(Eat(color=(random.randint(0, 255),
                                               random.randint(0, 255),
                                               random.randint(0, 255))))
@@ -81,9 +86,6 @@ while server_works:
             try:
                 keys = json.loads(obj.sock.recv(2 ** 10).decode("utf-8").strip("[]").replace("'", '"'))
 
-                obj.radius_review_x = int(keys["radius_review"].split(";")[0])
-                obj.radius_review_y = int(keys["radius_review"].split(";")[1])
-
                 if keys["left"]:
                     obj.rect = obj.rect.move(-obj.speed, 0)
 
@@ -98,6 +100,7 @@ while server_works:
 
             except Exception:
                 pass
+
 
     # Find visible enemy
     visibles = [[] for _ in range(len(map_objects))]
@@ -175,8 +178,7 @@ while server_works:
 
     # Check event
     for event in pygame.event.get():
-        keys = pygame.key.get_pressed()
-        if event.type == pygame.QUIT or keys[K_ESCAPE]:
+        if event.type == pygame.QUIT:
             server_works = False
 
     # Draw screen

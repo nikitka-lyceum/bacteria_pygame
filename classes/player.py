@@ -32,8 +32,8 @@ class Player(pygame.sprite.Sprite):
 
         self.scale = 1
 
-        self.radius_review_x = None
-        self.radius_review_y = None
+        self.radius_review_x = -1
+        self.radius_review_y = -1
 
     def __str__(self):
         return "Player"
@@ -48,14 +48,16 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = old_x
         self.rect.y = old_y
 
-        if self.radius_review_x is not None and self.radius_review_y is not None:
-            if (self.force >= self.radius_review_x / 2 or self.force >= self.radius_review_y / 2) and self.force <= 1100:
+        print(5)
+        if self.radius_review_x != -1 and self.radius_review_y != -1:
+
+            if (self.force >= self.radius_review_x / 4 or self.force >= self.radius_review_y / 4) and self.force <= 1100:
                 self.scale *= 2
                 self.speed -= 3
                 self.radius_review_x = WIDTH * self.scale
                 self.radius_review_y = HEIGHT * self.scale
 
-            if self.force < self.radius_review_x / 4 and self.force < self.radius_review_y / 4:
+            if self.force < self.radius_review_x / 8 and self.force < self.radius_review_y / 8:
                 if self.scale > 1:
                     self.scale //= 2
                     self.speed += 3
