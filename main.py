@@ -165,7 +165,7 @@ def main():
         camera.update(player_x, player_y, player_size / scale, player_size / scale, WIDTH, HEIGHT)
 
         # Update grid position
-        grid.update(player_x, player_y, player_size / scale, player_size / scale, WIDTH, HEIGHT)
+        grid.update(player_x, player_y, scale)
 
         # Check event
         keys = pygame.key.get_pressed()
