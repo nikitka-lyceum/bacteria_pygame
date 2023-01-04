@@ -8,7 +8,6 @@ from config import *
 
 from classes import *
 
-
 eat_image = pygame.image.load(PATH_IMAGE + "eat.png")
 eat_image = pygame.transform.scale(eat_image, (EAT_SIZE, EAT_SIZE))
 
@@ -27,6 +26,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 grid = Grid(screen)
 clock = pygame.time.Clock()
 
+
 def terminate():
     pygame.quit()
     sys.exit()
@@ -44,9 +44,8 @@ def die_screen(screen):
                 terminate()
 
             elif event.type == pygame.KEYDOWN or \
-                 event.type == pygame.MOUSEBUTTONDOWN:
+                    event.type == pygame.MOUSEBUTTONDOWN:
                 running = False
-
 
         screen.fill(BACKGROUND_COLOR)
 
@@ -107,7 +106,7 @@ def draw(screen, visible):
     screen.fill(BACKGROUND_COLOR)
 
     # Draw grid
-    # grid.draw()
+    grid.draw()
 
     # Draw self
     screen.blit(pygame.transform.scale(pygame.image.load(PATH_IMAGE + "bacterium.png"),
@@ -118,8 +117,6 @@ def draw(screen, visible):
     font = pygame.font.Font(None, 20)
     size_text = font.render(f"Размер: {player_size}", True, (20, 255, 35))
     screen.blit(size_text, (WIDTH - size_text.get_width() - 5, 5))
-
-
 
     for i in visible:
         camera.update(player_x, player_y, player_size / scale, player_size / scale, WIDTH, HEIGHT)
@@ -159,8 +156,16 @@ def main():
     while running:
         clock.tick(FPS)
 
+        player_x = WIDTH // 2 - player_x
+        player_y = HEIGHT // 2 - player_y
+
+        WIDTH, HEIGHT = screen.get_width(), screen.get_height()
+
+        # Update camera
+        camera.update(player_x, player_y, player_size / scale, player_size / scale, WIDTH, HEIGHT)
+
         # Update grid position
-        grid.update(player_x, player_y, scale)
+        grid.update(player_x, player_y, player_size / scale, player_size / scale, WIDTH, HEIGHT)
 
         # Check event
         keys = pygame.key.get_pressed()
@@ -179,7 +184,6 @@ def main():
                  "radius_review": f"{WIDTH};{HEIGHT}"}
             ]
             client.send(f"{send_data}".encode("utf-8"))
-
 
             # Apply server data
             server_data = json.loads(client.recv(4 ** 10).decode("utf-8").strip("[]").replace("'", '"'))
@@ -202,16 +206,9 @@ def main():
         except Exception:
             terminate()
 
-        player_x = WIDTH // 2 - player_x
-        player_y = HEIGHT // 2 - player_y
-
-        WIDTH, HEIGHT = screen.get_width(), screen.get_height()
-
-        # Update camera
-        camera.update(player_x, player_y, player_size / scale, player_size / scale, WIDTH, HEIGHT)
-
     client.close()
     die_screen(screen)
+
 
 if __name__ == '__main__':
     start_screen(screen)

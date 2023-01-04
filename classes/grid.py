@@ -9,20 +9,25 @@ class Grid():
         self.y = 0
         self.size = 1
 
-    def update(self, player_x, player_y, scale):
-        self.size = PLAYER_SIZE // scale
-        self.x = -self.size + (player_x) % (self.size / scale)
-        self.y = -self.size + (player_y) % (self.size / scale)
+        self.WIDTH = 0
+        self.HEIGHT = 0
+
+    def update(self, player_x, player_y, w, h, WIDTH, HEIGHT):
+        self.dx = -(player_x + w // 2 - WIDTH // 2)
+        self.dy = -(player_y + h // 2 - HEIGHT // 2)
+
+        self.WIDTH = WIDTH
+        self.HEIGHT = HEIGHT
 
 
 
     def draw(self):
-        for i in range(WIDTH // self.size + 2):
+        for i in range(self.WIDTH // self.size + 2):
             pygame.draw.line(self.screen, GRID_COLOUR,
-                             [self.x + i * self.size, 0],
-                             [self.x + i * self.size, HEIGHT], 1)
+                             [self.x + self.dx + i * self.size, 0],
+                             [self.x + self.dx + i * self.size, self.HEIGHT], 1)
 
-        for i in range(HEIGHT // 2 + 2):
+        for i in range(self.HEIGHT // 2 + 2):
             pygame.draw.line(self.screen, GRID_COLOUR,
-                             [0, self.y + i * self.size],
-                             [WIDTH, self.y + i * self.size], 1)
+                             [0, self.y + self.dy + i * self.size],
+                             [self.WIDTH, self.y + self.dy + i * self.size], 1)
