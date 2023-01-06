@@ -1,10 +1,12 @@
 import copy
 import json
+import random
 import socket
 import threading
 from pygame import *
 import pygame.sprite
 
+from classes import *
 from config import *
 
 ip = socket.gethostbyname(socket.gethostname())

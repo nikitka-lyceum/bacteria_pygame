@@ -106,7 +106,7 @@ def draw(screen, visible):
     screen.fill(BACKGROUND_COLOR)
 
     # Draw grid
-    grid.draww()
+    # grid.draw()
 
     # Draw self
     screen.blit(pygame.transform.scale(pygame.image.load(PATH_IMAGE + "bacterium.png"),
@@ -165,7 +165,7 @@ def main():
         camera.update(player_x, player_y, player_size / scale, player_size / scale, WIDTH, HEIGHT)
 
         # Update grid position
-        grid.update(player_x, player_y, scale)
+        grid.update(player_x, player_y, player_size, scale, WIDTH, HEIGHT)
 
         # Check event
         keys = pygame.key.get_pressed()
@@ -203,7 +203,8 @@ def main():
         except socket.timeout:
             pass
 
-        except Exception:
+        except Exception as e:
+            print(e)
             terminate()
 
     client.close()
