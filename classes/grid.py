@@ -11,35 +11,24 @@ class Grid():
 
         self.WIDTH = 0
         self.HEIGHT = 0
-        self.timer = 0
 
-    def update(self, player_x, player_y, scale, WIDTH, HEIGHT):
-        # self.x = (0 - player_x) * -1
-        # self.y = (0 - player_y) * -1
+        self.start_size = PLAYER_SIZE
 
-        if self.timer >= 200:
-            self.x += 1
-            self.y += 1
-
-            self.timer = 0
-
-        else:
-            self.timer += 1
-
-        self.size = scale * 20
-
+    def update(self, r_x, r_y, L, WIDTH, HEIGHT):
         self.WIDTH = WIDTH
         self.HEIGHT = HEIGHT
 
-
+        self.size = (self.start_size // L) * 50
+        self.x = -self.size + (-r_x) % (self.size)
+        self.y = -self.size + (-r_y) % (self.size)
 
     def draw(self):
-        for i in range(self.x, WORLD_WIDTH):
+        for i in range(self.WIDTH // self.size + 2):
             pygame.draw.line(self.screen, GRID_COLOUR,
-                             [i * self.size, 0],
-                             [i * self.size, WORLD_HEIGHT], 1)
+                             [self.x + i * self.size, 0],
+                             [self.x + i * self.size, self.HEIGHT], 1)
 
-        for i in range(self.x, WORLD_HEIGHT):
+        for i in range(self.HEIGHT // 2 + 2):
             pygame.draw.line(self.screen, GRID_COLOUR,
-                             [0, i * self.size],
-                             [WORLD_WIDTH, i * self.size], 1)
+                             [0, self.y + i * self.size],
+                             [self.WIDTH, self.y + i * self.size], 1)
