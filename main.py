@@ -13,8 +13,8 @@ eat_image = pygame.transform.scale(eat_image, (EAT_SIZE, EAT_SIZE))
 
 player_x, player_y, player_size = 0, 0, 100
 player_name = ""
-# player_skin = random.choice(skins)
-player_skin = "poison"
+player_skin = random.choice(skins)
+# player_skin = "poison"
 
 isLive = -1
 
