@@ -74,10 +74,6 @@ def update_timer():
             timer += 1
 
 
-        if list_count.count("Player") == 0:
-            map_objects = []
-
-
 def main():
     global server_works
 

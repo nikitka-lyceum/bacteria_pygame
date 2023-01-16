@@ -141,7 +141,7 @@ def start_screen(screen):
 
 def draw(screen, visible):
     pygame.display.set_caption(f"{player_x}, {player_y}")
-    screen.fill((100, 100, 100))
+    screen.fill(BACKGROUND_COLOR)
 
     # Draw self
     screen.blit(pygame.transform.scale(pygame.image.load(PATH_IMAGE + f"bacterium_{player_skin}.png"),
