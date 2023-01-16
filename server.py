@@ -91,8 +91,8 @@ def main():
         for i in range(len(map_objects)):
             for j in range(len(map_objects)):
                 if str(map_objects[i]) == "Player" and map_objects[i] != map_objects[j]:
-                    dict_x = map_objects[i].rect.x - map_objects[j].rect.x - map_objects[i].force
-                    dict_y = map_objects[i].rect.y - map_objects[j].rect.y - map_objects[i].force
+                    dict_x = map_objects[i].rect.x - map_objects[j].rect.x
+                    dict_y = map_objects[i].rect.y - map_objects[j].rect.y
 
                     if abs(dict_x) <= map_objects[i].radius_review_x and abs(dict_y) <= map_objects[i].radius_review_y:
                         type_obj = str(map_objects[j])
@@ -165,16 +165,29 @@ def main():
                             obj.rect = obj.rect.move(-obj.speed, 0)
 
                         else:
+                            obj.rect.x = 0
 
 
-                    if keys["right"] and obj.rect.x + obj.speed + obj.force <= WORLD_WIDTH:
-                        obj.rect = obj.rect.move(obj.speed, 0)
+                    if keys["right"]:
+                        if obj.rect.x + obj.speed + obj.force <= WORLD_WIDTH:
+                            obj.rect = obj.rect.move(obj.speed, 0)
 
-                    if keys["up"] and obj.rect.y - obj.speed >= 0:
-                        obj.rect = obj.rect.move(0, -obj.speed)
+                        else:
+                            obj.rect.x = WORLD_WIDTH - obj.force
 
-                    if keys["down"] and obj.rect.y + obj.speed + obj.force <= WORLD_HEIGHT:
-                        obj.rect = obj.rect.move(0, obj.speed)
+                    if keys["up"]:
+                        if obj.rect.y - obj.speed >= 0:
+                            obj.rect = obj.rect.move(0, -obj.speed)
+
+                        else:
+                            obj.rect.y = 0
+
+                    if keys["down"]:
+                        if obj.rect.y + obj.speed + obj.force <= WORLD_HEIGHT:
+                            obj.rect = obj.rect.move(0, obj.speed)
+
+                        else:
+                            obj.rect.y = WORLD_HEIGHT - obj.force
 
                 except Exception as e:
                     print(e)
