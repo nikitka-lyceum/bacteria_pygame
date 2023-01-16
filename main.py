@@ -13,7 +13,8 @@ eat_image = pygame.transform.scale(eat_image, (EAT_SIZE, EAT_SIZE))
 
 player_x, player_y, player_size = 0, 0, 100
 player_name = ""
-player_skin = random.choice(skins)
+# player_skin = random.choice(skins)
+player_skin = "poison"
 
 isLive = -1
 
@@ -135,15 +136,17 @@ def draw(screen, visible):
 
     # Draw self NickName
     font = pygame.font.Font(None, 25)
-    text = font.render(f"{player_name}. Сила: {player_size}", True, (0, 20, 210))
-    screen.blit(text, (WIDTH // 2 - (len(f"{player_name}. Сила: {player_size}") * 25) // 2, HEIGHT // 2 - (player_size / scale)))
+    text = font.render(f"{player_name}. Размер: {player_size}", True, (0, 20, 210))
+    screen.blit(text, (WIDTH // 2 - (len(f"{player_name}. Размер: {player_size}") * 25) // 2, HEIGHT // 2 - (player_size / scale)))
 
     # Draw info
     font = pygame.font.Font(None, 20)
     size_text = font.render(f"Размер: {player_size}", True, (20, 255, 35))
+    pos_text = font.render(f"Позиция: {player_x}px, {player_y}px", True, (20, 255, 35))
     screen.blit(size_text, (WIDTH - size_text.get_width() - 5, 5))
+    screen.blit(pos_text, (WIDTH - pos_text.get_width() - 5, 25))
 
-    for i in visible:
+    for i in visible[:2]:
         camera.update(player_x, player_y, player_size / scale, player_size / scale, WIDTH, HEIGHT)
         if i["type_obj"] == "Player":
             x = i["x"]

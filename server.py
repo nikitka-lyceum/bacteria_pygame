@@ -3,6 +3,8 @@ import json
 import random
 import socket
 import threading
+import time
+
 from pygame import *
 import pygame.sprite
 
@@ -28,6 +30,7 @@ clock = pygame.time.Clock()
 map_objects = []
 
 timer = 0
+
 
 def new_users():
     global map_objects
@@ -82,14 +85,10 @@ def main():
             if event.type == pygame.QUIT or keys[K_ESCAPE]:
                 server_works = False
 
-        # Update obj
-        for obj in map_objects:
-            obj.update(obj.WIDTH, obj.HEIGHT)
-
         # Find visible enemy
         visibles = [[] for _ in range(len(map_objects))]
         for i in range(len(map_objects)):
-            for j in range(len(map_objects)):
+            for j in range(i, len(map_objects)):
                 if str(map_objects[i]) == "Player" and map_objects[i] != map_objects[j]:
                     dict_x = map_objects[i].rect.x - map_objects[j].rect.x
                     dict_y = map_objects[i].rect.y - map_objects[j].rect.y
@@ -146,59 +145,12 @@ def main():
                 except Exception:
                     pass
 
-        # Handler command
-        for obj in map_objects:
-            if str(obj) == "Player":
-                try:
-                    keys = json.loads(obj.sock.recv(2 ** 10).decode("utf-8").strip("[]").replace("'", '"'))
-
-                    obj.radius_review_x = int(keys["radius_review"].split(";")[0]) * obj.scale
-                    obj.radius_review_y = int(keys["radius_review"].split(";")[1]) * obj.scale
-                    obj.WIDTH = obj.radius_review_x
-                    obj.HEIGHT = obj.radius_review_y
-
-                    obj.name = keys["nickname"]
-                    obj.skin = keys["skin"]
-
-                    if keys["left"]:
-                        if obj.rect.x - obj.speed >= 0:
-                            obj.rect = obj.rect.move(-obj.speed, 0)
-
-                        else:
-                            obj.rect.x = 0
-
-
-                    if keys["right"]:
-                        if obj.rect.x + obj.speed + obj.force <= WORLD_WIDTH:
-                            obj.rect = obj.rect.move(obj.speed, 0)
-
-                        else:
-                            obj.rect.x = WORLD_WIDTH - obj.force
-
-                    if keys["up"]:
-                        if obj.rect.y - obj.speed >= 0:
-                            obj.rect = obj.rect.move(0, -obj.speed)
-
-                        else:
-                            obj.rect.y = 0
-
-                    if keys["down"]:
-                        if obj.rect.y + obj.speed + obj.force <= WORLD_HEIGHT:
-                            obj.rect = obj.rect.move(0, obj.speed)
-
-                        else:
-                            obj.rect.y = WORLD_HEIGHT - obj.force
-
-                except Exception as e:
-                    print(e)
-
-        # Send server data
         for i in range(len(map_objects)):
+            # Send server data
             try:
                 map_objects[i].error = 0
 
                 if str(map_objects[i]) == "Player":
-
                     server_data = [
                         {'x': map_objects[i].rect.x,
                          'y': map_objects[i].rect.y,
@@ -212,6 +164,53 @@ def main():
 
                     if map_objects[i].isLive == 0:
                         raise Exception
+
+                    # Handler command
+                    try:
+                        obj = map_objects[i]
+                        keys = json.loads(obj.sock.recv(2 ** 10).decode("utf-8").strip("[]").replace("'", '"'))
+
+                        obj.radius_review_x = int(keys["radius_review"].split(";")[0]) * obj.scale
+                        obj.radius_review_y = int(keys["radius_review"].split(";")[1]) * obj.scale
+                        obj.WIDTH = obj.radius_review_x
+                        obj.HEIGHT = obj.radius_review_y
+
+                        obj.name = keys["nickname"]
+                        obj.skin = keys["skin"]
+
+                        if keys["left"]:
+                            if obj.rect.x - obj.speed >= 0:
+                                obj.rect = obj.rect.move(-obj.speed, 0)
+
+                            else:
+                                obj.rect.x = 0
+
+                        if keys["right"]:
+                            if obj.rect.x + obj.speed + obj.force <= WORLD_WIDTH:
+                                obj.rect = obj.rect.move(obj.speed, 0)
+
+                            else:
+                                obj.rect.x = WORLD_WIDTH - obj.force
+
+                        if keys["up"]:
+                            if obj.rect.y - obj.speed >= 0:
+                                obj.rect = obj.rect.move(0, -obj.speed)
+
+                            else:
+                                obj.rect.y = 0
+
+                        if keys["down"]:
+                            if obj.rect.y + obj.speed + obj.force <= WORLD_HEIGHT:
+                                obj.rect = obj.rect.move(0, obj.speed)
+
+                            else:
+                                obj.rect.y = WORLD_HEIGHT - obj.force
+
+                        # Update obj
+                        obj.update(obj.WIDTH, obj.HEIGHT)
+
+                    except Exception:
+                        pass
 
             except Exception:
                 try:
