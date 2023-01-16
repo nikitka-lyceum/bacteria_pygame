@@ -99,11 +99,19 @@ def start_screen(screen):
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     if len(input_name) <= 3:
+                        error = pygame.mixer.Sound(PATH_AUDIO + "error.mp3")
+                        error.play()
                         text_error = font.render("Никнейм слишком короткий", True, (255, 0, 0))
+
                     elif len(input_name) > 15:
+                        error = pygame.mixer.Sound(PATH_AUDIO + "error.mp3")
+                        error.play()
                         text_error = font.render("Никнейм слишком длинный", True, (255, 0, 0))
+
                     else:
                         player_name = input_name
+                        button = pygame.mixer.Sound(PATH_AUDIO + "button.mp3")
+                        button.play()
                         return
 
                 elif event.key == pygame.K_BACKSPACE:
@@ -133,7 +141,7 @@ def start_screen(screen):
 
 def draw(screen, visible):
     pygame.display.set_caption(f"{player_x}, {player_y}")
-    screen.fill(BACKGROUND_COLOR)
+    screen.fill((100, 100, 100))
 
     # Draw self
     screen.blit(pygame.transform.scale(pygame.image.load(PATH_IMAGE + f"bacterium_{player_skin}.png"),
@@ -229,7 +237,6 @@ def main():
 
             # Apply server data
             server_data = json.loads(client.recv(4 ** 10).decode("utf-8").strip("[]").replace("'", '"'))
-            print(server_data)
             visibles = server_data["visibles"]
             player_x = server_data["x"]
             player_y = server_data["y"]

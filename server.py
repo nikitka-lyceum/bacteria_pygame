@@ -61,7 +61,9 @@ def update_timer():
     while server_works:
         clock.tick(FPS)
 
-        if timer >= 200 and [str(i) for i in map_objects].count("Eat") <= 200:
+        list_count = [str(i) for i in map_objects]
+
+        if timer >= 200 and list_count.count("Eat") <= 200:
             timer = 0
             for _ in range(random.randint(5, 20)):
                 map_objects.append(Eat(color=(random.randint(0, 255),
@@ -72,11 +74,16 @@ def update_timer():
             timer += 1
 
 
+        if list_count.count("Player") == 0:
+            map_objects = []
+
+
 def main():
     global server_works
 
     while server_works:
         clock.tick(FPS)
+
         # Find visible enemy
         visibles = [[] for _ in range(len(map_objects))]
         for i in range(len(map_objects)):

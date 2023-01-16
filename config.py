@@ -11,6 +11,7 @@ BACKGROUND_COLOR = (15, 15, 15)
 PATH_DATA = "data/"
 PATH_IMAGE = PATH_DATA + "image/"
 PATH_ICON = PATH_DATA + "icon/"
+PATH_AUDIO = PATH_DATA + "audio/"
 
 
 skins = ["green", "blue", "troll_face", "ice", "poison", "picachu", "alien", "cactus", "gradient", "pig"]
