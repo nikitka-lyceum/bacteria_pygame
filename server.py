@@ -28,7 +28,6 @@ pygame.init()
 clock = pygame.time.Clock()
 
 map_objects = []
-
 timer = 0
 
 
@@ -43,7 +42,7 @@ def new_users():
         # Connect new player
         try:
             client_socket, address = server.accept()
-            client_socket.setblocking(True)
+            client_socket.setblocking(False)
 
             map_objects.append(Player(sock=client_socket,
                                       address=address,
@@ -62,8 +61,6 @@ def update_timer():
     while server_works:
         clock.tick(FPS)
 
-        print([str(i) for i in map_objects].count("Eat"))
-
         if timer >= 200 and [str(i) for i in map_objects].count("Eat") <= 200:
             timer = 0
             for _ in range(random.randint(5, 20)):
@@ -80,14 +77,6 @@ def main():
 
     while server_works:
         clock.tick(FPS)
-
-        # Check event
-        # for event in pygame.event.get(eventtype=pygame.QUIT):
-        #     print(event)
-        #     keys = pygame.key.get_pressed()
-        #     if event.type == pygame.QUIT or keys[K_ESCAPE]:
-        #         server_works = False
-
         # Find visible enemy
         visibles = [[] for _ in range(len(map_objects))]
         for i in range(len(map_objects)):

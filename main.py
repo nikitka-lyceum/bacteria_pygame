@@ -30,9 +30,9 @@ clock = pygame.time.Clock()
 
 
 def draw_nickname(nickname, force, x, y, size, scale):
-    font = pygame.font.Font(None, 25 // scale)
-    text = font.render(f"{nickname}. Сила: {force}", True, (0, 20, 210))
-    screen.blit(text, (x + (size - len(f"{nickname}. Сила: {force}")), y))
+    font = pygame.font.Font(None, 45 // scale)
+    text = font.render(f"{nickname}. Размер: {force}", True, (0, 20, 210))
+    screen.blit(text, (x, y - 45 // scale))
 
 
 def terminate():
@@ -82,13 +82,13 @@ def start_screen(screen):
     intro_text = ["Bacterium", ""
                   "Правила игры очень просты,",
                   "Поедай своих противников и стань лучшим среди них",
-                  "Удачи!"]
+                  "Удачи!",
+                  "Чтобы начать игру нажмине Enter"]
 
-    # fon = pygame.transform.scale(load_image('fon.jpg'), (WIDTH, HEIGHT))
-    # screen.blit(fon, (0, 0))
     font = pygame.font.Font(None, 30)
 
     input_name = ""
+    text_error = font.render("", True, (255, 0, 0))
 
     while True:
         clock.tick(FPS)
@@ -98,8 +98,13 @@ def start_screen(screen):
 
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
-                    player_name = input_name
-                    return
+                    if len(input_name) <= 3:
+                        text_error = font.render("Никнейм слишком короткий", True, (255, 0, 0))
+                    elif len(input_name) > 15:
+                        text_error = font.render("Никнейм слишком длинный", True, (255, 0, 0))
+                    else:
+                        player_name = input_name
+                        return
 
                 elif event.key == pygame.K_BACKSPACE:
                     input_name = input_name[:-1]
@@ -109,6 +114,7 @@ def start_screen(screen):
 
         screen.fill((0, 0, 0))
 
+        screen.blit(text_error, (10, 300))
         screen.blit(font.render(f"Введите никнейм: {input_name}", True, (0, 210, 10)), (10, 250))
 
         text_coord = 50
@@ -137,7 +143,7 @@ def draw(screen, visible):
     # Draw self NickName
     font = pygame.font.Font(None, 25)
     text = font.render(f"{player_name}. Размер: {player_size}", True, (0, 20, 210))
-    screen.blit(text, (WIDTH // 2 - (len(f"{player_name}. Размер: {player_size}") * 25) // 2, HEIGHT // 2 - (player_size / scale)))
+    screen.blit(text, (WIDTH // 2 - player_size // 2, HEIGHT // 2 - (player_size / scale)))
 
     # Draw info
     font = pygame.font.Font(None, 20)
@@ -172,7 +178,6 @@ def draw(screen, visible):
             x, y = camera.apply(player_x + x, player_y + y)
             color = tuple(map(int, i["color"].strip("()").split(', ')))
 
-            # eat_image_copy = eat_image.copy()
             eat_image.fill(color)
             screen.blit(pygame.transform.scale(eat_image, (EAT_SIZE / scale, EAT_SIZE / scale)), (x, y))
 
@@ -224,6 +229,7 @@ def main():
 
             # Apply server data
             server_data = json.loads(client.recv(4 ** 10).decode("utf-8").strip("[]").replace("'", '"'))
+            print(server_data)
             visibles = server_data["visibles"]
             player_x = server_data["x"]
             player_y = server_data["y"]
@@ -240,9 +246,8 @@ def main():
         except socket.timeout:
             pass
 
-        # except Exception as e:
-        #     print(e)
-        #     terminate()
+        except Exception as e:
+            pass
 
     client.close()
     die_screen(screen)
