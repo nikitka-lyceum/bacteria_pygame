@@ -13,6 +13,7 @@ eat_image = pygame.transform.scale(eat_image, (EAT_SIZE, EAT_SIZE))
 
 player_x, player_y, player_size = 0, 0, 100
 player_name = ""
+player_skin = random.choice(skins)
 
 isLive = -1
 
@@ -24,14 +25,13 @@ camera = Camera()
 pygame.init()
 pygame.display.set_caption("Bacterium")
 screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
-grid = Grid(screen)
 clock = pygame.time.Clock()
 
 
-def draw_nickname(nickname, force, x, y, size):
-    font = pygame.font.Font(None, 25)
+def draw_nickname(nickname, force, x, y, size, scale):
+    font = pygame.font.Font(None, 25 // scale)
     text = font.render(f"{nickname}. Сила: {force}", True, (0, 20, 210))
-    screen.blit(text, (x // 2, y // 2 - size))
+    screen.blit(text, (x + (size - len(f"{nickname}. Сила: {force}")), y))
 
 
 def terminate():
@@ -124,13 +124,12 @@ def start_screen(screen):
 
 
 
-
 def draw(screen, visible):
     pygame.display.set_caption(f"{player_x}, {player_y}")
     screen.fill(BACKGROUND_COLOR)
 
     # Draw self
-    screen.blit(pygame.transform.scale(pygame.image.load(PATH_IMAGE + "bacterium.png"),
+    screen.blit(pygame.transform.scale(pygame.image.load(PATH_IMAGE + f"bacterium_{player_skin}.png"),
                                        (player_size / scale, player_size / scale)),
                 (WIDTH // 2 - player_size / scale // 2, HEIGHT // 2 - player_size / scale // 2))
 
@@ -150,13 +149,19 @@ def draw(screen, visible):
             x = i["x"]
             y = i["y"]
             size = i["size"]
+            skin = i["skin"]
             force = i["force"]
             nickname = i["nickname"]
+
             x, y = camera.apply(player_x + x, player_y + y)
+            draw_nickname(nickname, force, x, y, size, scale)
 
-            draw_nickname(nickname, force, x, y, size)
+            if skin != "":
+                screen.blit(pygame.transform.scale(pygame.image.load(PATH_IMAGE + f"bacterium_{skin}.png"), (size, size)), (x, y))
+            else:
+                screen.blit(pygame.transform.scale(pygame.image.load(PATH_IMAGE + f"bacterium.png"), (size, size)), (x, y))
 
-            screen.blit(pygame.transform.scale(pygame.image.load(PATH_IMAGE + "bacterium.png"), (size, size)), (x, y))
+
 
         else:
             x = i["x"]
@@ -209,7 +214,8 @@ def main():
                  "up": int(keys[K_w] or keys[K_UP]),
                  "down": int(keys[K_s] or keys[K_DOWN]),
                  "radius_review": f"{WIDTH};{HEIGHT}",
-                 "nickname": player_name}
+                 "nickname": player_name,
+                 "skin": player_skin}
             ]
             client.send(f"{send_data}".encode("utf-8"))
 

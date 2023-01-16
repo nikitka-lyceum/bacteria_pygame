@@ -59,7 +59,7 @@ def update_timer():
     while server_works:
         clock.tick(FPS)
 
-        if timer >= 200 and [str(i) for i in map_objects].count("Eat") <= 250:
+        if timer >= 200 and [str(i) for i in map_objects].count("Eat") <= 200:
             timer = 0
             for _ in range(random.randint(5, 20)):
                 map_objects.append(Eat(color=(random.randint(0, 255),
@@ -91,8 +91,8 @@ def main():
         for i in range(len(map_objects)):
             for j in range(len(map_objects)):
                 if str(map_objects[i]) == "Player" and map_objects[i] != map_objects[j]:
-                    dict_x = map_objects[i].rect.x - map_objects[j].rect.x
-                    dict_y = map_objects[i].rect.y - map_objects[j].rect.y
+                    dict_x = map_objects[i].rect.x - map_objects[j].rect.x - map_objects[i].force
+                    dict_y = map_objects[i].rect.y - map_objects[j].rect.y - map_objects[i].force
 
                     if abs(dict_x) <= map_objects[i].radius_review_x and abs(dict_y) <= map_objects[i].radius_review_y:
                         type_obj = str(map_objects[j])
@@ -108,6 +108,7 @@ def main():
                                 'x': x,
                                 'y': y,
                                 'size': size,
+                                'skin': map_objects[j].skin,
                                 'force': round(map_objects[j].force)
                             }
                             visibles[i].append(j_data)
@@ -157,21 +158,26 @@ def main():
                     obj.HEIGHT = obj.radius_review_y
 
                     obj.name = keys["nickname"]
+                    obj.skin = keys["skin"]
 
-                    if keys["left"] and obj.rect.x - obj.speed >= 0:
-                        obj.rect = obj.rect.move(-obj.speed, 0)
+                    if keys["left"]:
+                        if obj.rect.x - obj.speed >= 0:
+                            obj.rect = obj.rect.move(-obj.speed, 0)
+
+                        else:
+
 
                     if keys["right"] and obj.rect.x + obj.speed + obj.force <= WORLD_WIDTH:
                         obj.rect = obj.rect.move(obj.speed, 0)
 
-                    if keys["up"] and obj.rect.y + obj.speed + obj.force <= WORLD_HEIGHT:
+                    if keys["up"] and obj.rect.y - obj.speed >= 0:
                         obj.rect = obj.rect.move(0, -obj.speed)
 
-                    if keys["down"] and obj.rect.y - obj.speed >= 0:
+                    if keys["down"] and obj.rect.y + obj.speed + obj.force <= WORLD_HEIGHT:
                         obj.rect = obj.rect.move(0, obj.speed)
 
-                except Exception:
-                    pass
+                except Exception as e:
+                    print(e)
 
         # Send server data
         for i in range(len(map_objects)):

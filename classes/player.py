@@ -24,6 +24,8 @@ class Player(pygame.sprite.Sprite):
 
         self.name = str(random.randint(100, 50000))
 
+        self.skin = ""
+
         self.image = Player.image.copy()
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
@@ -45,13 +47,17 @@ class Player(pygame.sprite.Sprite):
         old_x = self.rect.x
         old_y = self.rect.y
 
-        self.image = pygame.transform.scale(pygame.image.load(PATH_IMAGE + "bacterium.png"), (self.force, self.force))
+        if self.skin != "":
+            self.image = pygame.transform.scale(pygame.image.load(PATH_IMAGE + f"bacterium_{self.skin}.png"), (self.force, self.force))
+        else:
+            self.image = pygame.transform.scale(pygame.image.load(PATH_IMAGE + f"bacterium.png"), (self.force, self.force))
+
+
         self.rect = self.image.get_rect()
 
         self.rect.x = old_x
         self.rect.y = old_y
 
-        print(5)
         if self.radius_review_x != -1 and self.radius_review_y != -1:
 
             if (self.force >= self.radius_review_x / 6 or self.force >= self.radius_review_y / 6):

@@ -1,6 +1,3 @@
-from win32api import GetSystemMetrics
-
-# WIDTH, HEIGHT = (GetSystemMetrics(0), GetSystemMetrics(1))
 WIDTH, HEIGHT = (700, 500)
 FPS = 120
 
@@ -14,6 +11,10 @@ BACKGROUND_COLOR = (15, 15, 15)
 PATH_DATA = "data/"
 PATH_IMAGE = PATH_DATA + "image/"
 PATH_ICON = PATH_DATA + "icon/"
+
+
+# skins = ["blue", "red", "green", "white", "caramel", "orange"]
+skins = ["green", "blue"]
 
 
 GRID_COLOUR = (150, 150, 150)
