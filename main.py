@@ -124,7 +124,7 @@ def draw(screen, visible):
             x = i["x"]
             y = i["y"]
             size = i["size"]
-            x, y = camera.apply(x, y)
+            x, y = camera.apply(player_x + x, player_y + y)
 
             screen.blit(pygame.transform.scale(pygame.image.load(PATH_IMAGE + "bacterium.png"), (size, size)), (x, y))
 
