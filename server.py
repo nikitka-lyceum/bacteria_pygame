@@ -107,7 +107,8 @@ def main():
                                 'nickname': map_objects[j].name,
                                 'x': x,
                                 'y': y,
-                                'size': size
+                                'size': size,
+                                'force': round(map_objects[j].force)
                             }
                             visibles[i].append(j_data)
 
@@ -155,19 +156,18 @@ def main():
                     obj.WIDTH = obj.radius_review_x
                     obj.HEIGHT = obj.radius_review_y
 
-                    print(obj.radius_review_x)
-                    print(obj.radius_review_y)
+                    obj.name = keys["nickname"]
 
-                    if keys["left"]:
+                    if keys["left"] and obj.rect.x - obj.speed >= 0:
                         obj.rect = obj.rect.move(-obj.speed, 0)
 
-                    if keys["right"]:
+                    if keys["right"] and obj.rect.x + obj.speed + obj.force <= WORLD_WIDTH:
                         obj.rect = obj.rect.move(obj.speed, 0)
 
-                    if keys["up"]:
+                    if keys["up"] and obj.rect.y + obj.speed + obj.force <= WORLD_HEIGHT:
                         obj.rect = obj.rect.move(0, -obj.speed)
 
-                    if keys["down"]:
+                    if keys["down"] and obj.rect.y - obj.speed >= 0:
                         obj.rect = obj.rect.move(0, obj.speed)
 
                 except Exception:
@@ -184,15 +184,15 @@ def main():
                         {'x': map_objects[i].rect.x,
                          'y': map_objects[i].rect.y,
                          'size': round(map_objects[i].force),
-                         'name': map_objects[i].name,
                          'scale': map_objects[i].scale,
                          'isLive': map_objects[i].isLive,
                          'visibles': visibles[i]}
                     ]
+
                     map_objects[i].sock.send(f"{server_data}".encode("utf-8"))
 
                     if map_objects[i].isLive == 0:
-                        pass
+                        raise Exception
 
             except Exception:
                 try:

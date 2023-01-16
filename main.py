@@ -12,6 +12,7 @@ eat_image = pygame.image.load(PATH_IMAGE + "eat.png")
 eat_image = pygame.transform.scale(eat_image, (EAT_SIZE, EAT_SIZE))
 
 player_x, player_y, player_size = 0, 0, 100
+player_name = ""
 
 isLive = -1
 
@@ -25,6 +26,12 @@ pygame.display.set_caption("Bacterium")
 screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 grid = Grid(screen)
 clock = pygame.time.Clock()
+
+
+def draw_nickname(nickname, force, x, y, size):
+    font = pygame.font.Font(None, 25)
+    text = font.render(f"{nickname}. Сила: {force}", True, (0, 20, 210))
+    screen.blit(text, (x // 2, y // 2 - size))
 
 
 def terminate():
@@ -68,50 +75,69 @@ def die_screen(screen):
 
 
 def start_screen(screen):
-    global isLive
+    global isLive, player_name
 
     isLive = 1
-    intro_text = ["ЗАСТАВКА", "",
-                  "Правила игры",
-                  "Если в правилах несколько строк,",
-                  "приходится выводить их построчно"]
+    intro_text = ["Bacterium", ""
+                  "Правила игры очень просты,",
+                  "Поедай своих противников и стань лучшим среди них",
+                  "Удачи!"]
 
     # fon = pygame.transform.scale(load_image('fon.jpg'), (WIDTH, HEIGHT))
     # screen.blit(fon, (0, 0))
     font = pygame.font.Font(None, 30)
-    text_coord = 50
-    for line in intro_text:
-        string_rendered = font.render(line, True, pygame.Color('white'))
-        intro_rect = string_rendered.get_rect()
-        text_coord += 10
-        intro_rect.top = text_coord
-        intro_rect.x = 10
-        text_coord += intro_rect.height
-        screen.blit(string_rendered, intro_rect)
+
+    input_name = ""
 
     while True:
+        clock.tick(FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
-            elif event.type == pygame.KEYDOWN or \
-                    event.type == pygame.MOUSEBUTTONDOWN:
-                return
 
-        pygame.display.flip()
-        clock.tick(FPS)
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    player_name = input_name
+                    return
+
+                elif event.key == pygame.K_BACKSPACE:
+                    input_name = input_name[:-1]
+
+                else:
+                    input_name += event.unicode
+
+        screen.fill((0, 0, 0))
+
+        screen.blit(font.render(f"Введите никнейм: {input_name}", True, (0, 210, 10)), (10, 250))
+
+        text_coord = 50
+        for line in intro_text:
+            string_rendered = font.render(line, True, pygame.Color('white'))
+            intro_rect = string_rendered.get_rect()
+            text_coord += 10
+            intro_rect.top = text_coord
+            intro_rect.x = 10
+            text_coord += intro_rect.height
+            screen.blit(string_rendered, intro_rect)
+
+        pygame.display.update()
+
+
 
 
 def draw(screen, visible):
     pygame.display.set_caption(f"{player_x}, {player_y}")
     screen.fill(BACKGROUND_COLOR)
 
-    # Draw grid
-    grid.draw()
-
     # Draw self
     screen.blit(pygame.transform.scale(pygame.image.load(PATH_IMAGE + "bacterium.png"),
                                        (player_size / scale, player_size / scale)),
                 (WIDTH // 2 - player_size / scale // 2, HEIGHT // 2 - player_size / scale // 2))
+
+    # Draw self NickName
+    font = pygame.font.Font(None, 25)
+    text = font.render(f"{player_name}. Сила: {player_size}", True, (0, 20, 210))
+    screen.blit(text, (WIDTH // 2 - (len(f"{player_name}. Сила: {player_size}") * 25) // 2, HEIGHT // 2 - (player_size / scale)))
 
     # Draw info
     font = pygame.font.Font(None, 20)
@@ -124,7 +150,11 @@ def draw(screen, visible):
             x = i["x"]
             y = i["y"]
             size = i["size"]
+            force = i["force"]
+            nickname = i["nickname"]
             x, y = camera.apply(player_x + x, player_y + y)
+
+            draw_nickname(nickname, force, x, y, size)
 
             screen.blit(pygame.transform.scale(pygame.image.load(PATH_IMAGE + "bacterium.png"), (size, size)), (x, y))
 
@@ -164,9 +194,6 @@ def main():
         # Update camera
         camera.update(player_x, player_y, player_size / scale, player_size / scale, WIDTH, HEIGHT)
 
-        # Update grid position
-        grid.update(player_x, player_y, scale, WIDTH, HEIGHT)
-
         # Check event
         keys = pygame.key.get_pressed()
         for event in pygame.event.get():
@@ -181,7 +208,8 @@ def main():
                  "right": int(keys[K_d] or keys[K_RIGHT]),
                  "up": int(keys[K_w] or keys[K_UP]),
                  "down": int(keys[K_s] or keys[K_DOWN]),
-                 "radius_review": f"{WIDTH};{HEIGHT}"}
+                 "radius_review": f"{WIDTH};{HEIGHT}",
+                 "nickname": player_name}
             ]
             client.send(f"{send_data}".encode("utf-8"))
 
@@ -203,9 +231,9 @@ def main():
         except socket.timeout:
             pass
 
-        except Exception as e:
-            print(e)
-            terminate()
+        # except Exception as e:
+        #     print(e)
+        #     terminate()
 
     client.close()
     die_screen(screen)
