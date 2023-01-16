@@ -62,6 +62,8 @@ def update_timer():
     while server_works:
         clock.tick(FPS)
 
+        print([str(i) for i in map_objects].count("Eat"))
+
         if timer >= 200 and [str(i) for i in map_objects].count("Eat") <= 200:
             timer = 0
             for _ in range(random.randint(5, 20)):
@@ -80,20 +82,22 @@ def main():
         clock.tick(FPS)
 
         # Check event
-        for event in pygame.event.get():
-            keys = pygame.key.get_pressed()
-            if event.type == pygame.QUIT or keys[K_ESCAPE]:
-                server_works = False
+        # for event in pygame.event.get(eventtype=pygame.QUIT):
+        #     print(event)
+        #     keys = pygame.key.get_pressed()
+        #     if event.type == pygame.QUIT or keys[K_ESCAPE]:
+        #         server_works = False
 
         # Find visible enemy
         visibles = [[] for _ in range(len(map_objects))]
         for i in range(len(map_objects)):
-            for j in range(i, len(map_objects)):
+            for j in range(len(map_objects)):
                 if str(map_objects[i]) == "Player" and map_objects[i] != map_objects[j]:
                     dict_x = map_objects[i].rect.x - map_objects[j].rect.x
                     dict_y = map_objects[i].rect.y - map_objects[j].rect.y
 
-                    if abs(dict_x) <= map_objects[i].radius_review_x and abs(dict_y) <= map_objects[i].radius_review_y:
+                    if abs(dict_x) <= map_objects[i].radius_review_x and abs(dict_y) <= map_objects[
+                        i].radius_review_y:
                         type_obj = str(map_objects[j])
 
                         x = round(dict_x / map_objects[i].scale) * -1
@@ -124,7 +128,7 @@ def main():
 
         # Check collide
         for i in range(len(map_objects)):
-            for j in range(i + 1, len(map_objects)):
+            for j in range(len(map_objects)):
                 try:
                     if str(map_objects[i]) == "Player":
                         if map_objects[i].rect.colliderect(map_objects[j].rect):
@@ -141,6 +145,7 @@ def main():
                             else:
                                 map_objects[i].force += map_objects[j].force
                                 map_objects.remove(map_objects[j])
+
 
                 except Exception:
                     pass

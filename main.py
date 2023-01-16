@@ -146,7 +146,7 @@ def draw(screen, visible):
     screen.blit(size_text, (WIDTH - size_text.get_width() - 5, 5))
     screen.blit(pos_text, (WIDTH - pos_text.get_width() - 5, 25))
 
-    for i in visible[:2]:
+    for i in visible:
         camera.update(player_x, player_y, player_size / scale, player_size / scale, WIDTH, HEIGHT)
         if i["type_obj"] == "Player":
             x = i["x"]
@@ -172,9 +172,9 @@ def draw(screen, visible):
             x, y = camera.apply(player_x + x, player_y + y)
             color = tuple(map(int, i["color"].strip("()").split(', ')))
 
-            eat_image_copy = eat_image.copy()
-            eat_image_copy.fill(color)
-            screen.blit(pygame.transform.scale(eat_image_copy, (EAT_SIZE / scale, EAT_SIZE / scale)), (x, y))
+            # eat_image_copy = eat_image.copy()
+            eat_image.fill(color)
+            screen.blit(pygame.transform.scale(eat_image, (EAT_SIZE / scale, EAT_SIZE / scale)), (x, y))
 
     # Update display
     pygame.display.update()
