@@ -32,7 +32,8 @@ clock = pygame.time.Clock()
 def draw_nickname(nickname, force, x, y, size, scale):
     font = pygame.font.Font(None, 45 // scale)
     text = font.render(f"{nickname}. Размер: {force}", True, (0, 20, 210))
-    screen.blit(text, (x, y - 45 // scale))
+    text_rect = text.get_rect(center=(x, y - (45 // scale) - size / scale // 2))
+    screen.blit(text, text_rect)
 
 
 def terminate():
@@ -41,7 +42,7 @@ def terminate():
 
 
 def die_screen(screen):
-    intro_text = [f"Вы умерли"]
+    intro_text = [f"Вас съели"]
 
     running = True
     while running:
@@ -57,8 +58,6 @@ def die_screen(screen):
 
         screen.fill(BACKGROUND_COLOR)
 
-        # fon = pygame.transform.scale(load_image('fon.jpg'), (WIDTH, HEIGHT))
-        # screen.blit(fon, (0, 0))
         font = pygame.font.Font(None, 30)
         text_coord = 50
         for line in intro_text:
@@ -151,7 +150,8 @@ def draw(screen, visible):
     # Draw self NickName
     font = pygame.font.Font(None, 25)
     text = font.render(f"{player_name}. Размер: {player_size}", True, (0, 20, 210))
-    screen.blit(text, (WIDTH // 2 - player_size // 2, HEIGHT // 2 - (player_size / scale)))
+    text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 30 - player_size / scale // 2))
+    screen.blit(text, text_rect)
 
     # Draw info
     font = pygame.font.Font(None, 20)
